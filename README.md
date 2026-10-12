@@ -1,29 +1,29 @@
-# 미적분 자주포
+# Calculus Howitzer
 
-장약(1~4호)으로 거리를 정하고 발사각으로 세밀하게 조준해 목표를 맞히는 브라우저 포격 게임입니다.
-포탄이 날아가는 동안 미분(접선 기울기)과 적분(오일러 방법으로 속도→위치)을 실시간으로 보여줍니다.
+A browser artillery game: pick a charge (1–4) to set a rough distance, then fine-tune the launch angle to hit the target.
+While the shell flies, the game shows derivatives (tangent slope) and integrals (Euler's method, velocity → position) in real time.
 
-## 실행
+## Run
 
-`index.html`을 브라우저로 열면 됩니다. 빌드 과정은 없습니다.
+Open `index.html` in a browser. There is no build step.
 
-## 구조
+## Structure
 
-- `index.html` — 게임 전체 (HTML, CSS, JS 한 파일)
-  - `stepSim()` — Δt = 0.01초 단위 수치적분
-  - `accel()` — 중력 + 공기저항/바람 가속도
-  - `CHARGES` — 장약별 포구속도 60·75·93·115 m/s (사거리가 서로 겹쳐 모든 목표에 닿음)
-  - `neededAngles()` — 진공 궤적 식으로 현재 장약에 필요한 발사각 두 개(낮게·높게) 계산
-  - `TUT` — 수포자용 미적분 배우기 단계 (체험 미션 + 확인 문제, 첫 방문 시 자동 시작)
-  - `stepOnce()` / `setPaused()` — 0.5초씩 진행, 일시정지 (적분·미분 체험용)
-  - `renderLog()` — 자유 플레이 사격 기록 (이 목표에 쏜 최근 4발)
-  - `I18N` / `tr(ko, en)` / `P(ko, en)` — 한국어/English 전환. 고정 문구는 `data-i18n` 키, 동적 문구는 `tr()`로 그릴 때마다 고름. 선택은 localStorage에 저장
+- `index.html`: the whole game (HTML, CSS and JS in one file)
+  - `stepSim()`: numerical integration in Δt = 0.01 s steps
+  - `accel()`: acceleration from gravity + air drag/wind
+  - `CHARGES`: muzzle speed per charge, 60 · 75 · 93 · 115 m/s (ranges overlap, so every target is reachable)
+  - `neededAngles()`: uses the vacuum trajectory formula to find the two launch angles (low and high) needed with the current charge
+  - `TUT`: "learn calculus" lessons for people who struggle with math (hands-on missions + quick checks; starts automatically on the first visit)
+  - `stepOnce()` / `setPaused()`: step 0.5 s at a time, and pause (used to experience integrals and derivatives)
+  - `renderLog()`: free-play shot log (the last 4 shots at the current target)
+  - `I18N` / `tr(ko, en)` / `P(ko, en)`: Korean/English switch. Fixed text uses `data-i18n` keys; dynamic text is picked with `tr()` each time it's drawn. The choice is saved in localStorage
 
-## 모드
+## Modes
 
-- **진공**: 포물선 공식으로 정확히 풀림. 힌트 버튼으로 필요한 발사각 확인 가능
-- **공기저항 + 바람**: 닫힌 식이 없어 수치적분으로만 계산
+- **Vacuum**: solved exactly by the parabola formula. The hint button shows the launch angle you need
+- **Air drag + wind**: no closed-form formula, so it's computed by numerical integration only
 
-## 아이디어
+## Ideas
 
-- 점수 기록, 이동 목표물, 포탄 종류, 지형 파괴
+- High scores, moving targets, shell types, destructible terrain
