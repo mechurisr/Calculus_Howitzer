@@ -22,6 +22,11 @@ export async function open(page: Page, url: string, o: { seed?: number; tutorial
     window.requestAnimationFrame = cb => { queue.push(cb); return queue.length; };
     (window as unknown as { __frame: () => void }).__frame = () => { const q = queue.splice(0); q.forEach(cb => cb(performance.now())); };
     if (!tutorial) { localStorage.setItem('supojaTutDone', '1'); localStorage.setItem('series:howitzer:tutDone', '1'); }
+    // 원본 비교는 눈금 추가 전 배치로 한다 (C-005, research R-6): 페이지 스크립트가 돌기 전에 data-ticks 를 지워
+    // 새 손잡이·눈금 줄을 끈다. 눈금 줄이 아래 내용을 41px 밀어 스크린샷·튜토리얼 스크롤 위치가 달라지기 때문. 눈금 자체는 ticks.spec.ts 가 검사
+    document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'interactive') document.querySelector('.ang-track')?.removeAttribute('data-ticks');
+    });
   }, [o.seed ?? 12345, !!o.tutorial] as const);
   await page.goto(url);
   await page.evaluate(() => document.fonts.ready);
