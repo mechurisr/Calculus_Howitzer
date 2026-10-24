@@ -38,6 +38,7 @@ export interface TutorialOptions {
   openButton?: HTMLElement | null;
   onRender?: () => void;        // 카드를 다시 그릴 때마다 (예: 카드 안 버튼 활성 상태 갱신)
   onAction?: (el: HTMLElement) => void;  // 카드 본문의 [data-act] 버튼
+  onEnd?: () => void;           // 튜토리얼을 끝내거나 건너뛴 뒤 (완료 기록 저장 후)
 }
 export interface Tutorial {
   readonly index: number;       // 진행 중인 단계, 없으면 -1
@@ -82,7 +83,7 @@ export function createTutorial(o: TutorialOptions): Tutorial {
   function exit() { clearTimeout(timer); if (ti >= 0) TUT[ti].exit?.(st); }
   function go(i: number) { exit(); ti = i; st = {}; TUT[ti].enter?.(st); render(); card.scrollTop = 0; }
   function start() { document.body.classList.add('tut-open'); card.hidden = false; go(0); next.focus(); }
-  function end() { exit(); clearHl(); ti = -1; card.hidden = true; dim.hidden = true; document.body.classList.remove('tut-open'); save(doneKey, '1'); }
+  function end() { exit(); clearHl(); ti = -1; card.hidden = true; dim.hidden = true; document.body.classList.remove('tut-open'); save(doneKey, '1'); o.onEnd?.(); }
   // 게임 이벤트를 현재 단계에 전달하고 카드 갱신 (스크롤은 하지 않음)
   function emit(type: string, data?: unknown) {
     if (ti < 0) return; const s = TUT[ti], h = s.on?.[type]; if (!h) return;
