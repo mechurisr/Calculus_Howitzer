@@ -75,8 +75,12 @@
           "ls": "allow",
           "ls *": "allow",
           "date": "allow",
-          "python3 -c *": "allow"
-        }
+          "python3 -c *": "allow",
+          "grep *": "allow",
+          "head *": "allow",
+          "wc *": "allow"
+        },
+        "grep": "allow"
       }
     },
     "pr-check": {
@@ -112,8 +116,12 @@
           "git show *": "allow",
           "ls": "allow",
           "ls *": "allow",
-          "python3 -c *": "allow"
-        }
+          "python3 -c *": "allow",
+          "grep *": "allow",
+          "head *": "allow",
+          "wc *": "allow"
+        },
+        "grep": "allow"
       }
     },
     "fact-check": {
@@ -140,8 +148,12 @@
           "*": "deny",
           "gh issue view *": "allow",
           "gh issue comment *": "allow",
-          "python3 -c *": "allow"
-        }
+          "python3 -c *": "allow",
+          "grep *": "allow",
+          "head *": "allow",
+          "wc *": "allow"
+        },
+        "grep": "allow"
       }
     }
   },
