@@ -1,0 +1,29 @@
+/* 튜토리얼: 화면 아래 고정 코치마크 카드, 강조 요소는 어두운 막 위로 올림 */
+.tut-dim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999}
+.tut-hl{position:relative;z-index:1000;outline:3px solid var(--accent);outline-offset:4px;border-radius:6px;scroll-margin-top:14px}
+.tut-hl.dim{box-shadow:0 0 0 9999px rgba(0,0,0,.55)}
+body.tut-open{padding-bottom:55vh}
+.tut{position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(560px,calc(100% - 24px));max-height:48vh;overflow:auto;z-index:1001;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:8px;padding:14px 16px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.tut-step{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tut h3{font-family:var(--display);font-weight:400;font-size:21px;margin:2px 0 8px;line-height:1.2}
+.tut-body p{margin:0 0 8px}
+.tut-body .o{color:var(--accent);font-weight:700} .tut-body .bl{color:var(--blue);font-weight:700}
+.tut-body .ex{background:var(--bg);border-left:3px solid var(--blue);padding:8px 10px;border-radius:0 4px 4px 0;margin:0 0 8px}
+.tut-body table{border-collapse:collapse;margin:0 0 8px;font-size:14px}
+.tut-body td{border:1px solid var(--line);padding:5px 8px;vertical-align:top}
+.tut-body .quiz{display:grid;gap:6px;margin:0 0 8px}
+.tut-body .quiz button{text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
+.tut-body .quiz .right{border:2px solid var(--good);color:var(--good);font-weight:700}
+.tut-body .quiz .wrong{border:2px solid var(--bad);color:var(--bad)}
+.tut-body .fb{font-weight:500} .tut-body .fb.good{color:var(--good)} .tut-body .fb.bad{color:var(--bad)}
+.tut-body .act{padding:8px 12px;border:1px solid var(--blue);border-radius:4px;background:var(--bg);color:var(--blue);font:inherit;font-weight:700;cursor:pointer}
+.tut-body table.steps{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;width:100%}
+.tut-body table.steps tr:first-child td{font-family:var(--body);color:var(--muted)}
+.tut-ctrl{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px}
+.tut-ctrl .btn-primary{font-size:17px;padding:10px}
+.tut-ctrl button:disabled{opacity:.45;cursor:default}
+.tut-nav{display:flex;gap:8px;margin-top:6px}
+.tut-nav button{padding:10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit;font-weight:500;cursor:pointer}
+.tut-nav .skip{margin-right:auto;border-color:transparent;background:transparent;color:var(--muted)}
+.tut-nav .next{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;min-width:96px}
+.tut-nav button:disabled{opacity:.55;cursor:default}

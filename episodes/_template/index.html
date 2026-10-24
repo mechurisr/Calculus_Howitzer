@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>에피소드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script type="module" src="./src/main.ts"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <button class="lang-btn" id="langBtn" type="button"></button>
+    <h1 data-i18n="title"></h1>
+    <p data-i18n="lead"></p>
+    <button class="tut-btn" id="tutOpen" data-i18n="tutOpen"></button>
+  </header>
+
+  <canvas id="stage" class="stage"></canvas>
+
+  <section class="panel">
+    <div class="ctl">
+      <div class="ctl-head"><label for="v0" data-i18n="v0L"></label><span class="val" id="v0V"></span></div>
+      <div class="row"><input type="range" id="v0" min="5" max="30" step="1" value="20"></div>
+    </div>
+    <div class="actions">
+      <button class="btn-primary" id="run" data-i18n="run"></button>
+    </div>
+  </section>
+</div>
+
+<div class="tut-ctrl" id="tutCtrl" hidden>
+  <button class="btn-primary" id="tRun" data-i18n="run"></button>
+</div>
+</body>
+</html>

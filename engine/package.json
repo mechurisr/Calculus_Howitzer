@@ -1,0 +1,13 @@
+{
+  "name": "@series/engine",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./math": "./src/math/index.ts",
+    "./sim": "./src/sim/index.ts",
+    "./ui": "./src/ui/index.ts",
+    "./i18n": "./src/i18n/index.ts",
+    "./tutorial": "./src/tutorial/index.ts",
+    "./css/*": "./src/*"
+  }
+}

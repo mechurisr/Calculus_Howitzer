@@ -1,0 +1,40 @@
+# PR과 main push마다: 타입 검사·의존 규칙·단위 테스트(pnpm check) → 빌드 → 브라우저 테스트(pnpm test:e2e)
+# 헌장 머지 조건: 이 워크플로 통과 + 검토 에이전트 크로스체크에 미해결 [치명적] 없음
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6   # 버전은 package.json packageManager
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      # PW_CHANNEL 을 비우면 시스템 Chrome 대신 Playwright 번들 Chromium 사용 (playwright.config.ts)
+      - run: pnpm test:e2e
+        env:
+          CI: "true"
+          PW_CHANNEL: ""
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

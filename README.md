@@ -1,29 +1,40 @@
-# Calculus Howitzer
+# Math Role Simulations
 
-A browser artillery game: pick a charge (1–4) to set a rough distance, then fine-tune the launch angle to hit the target.
-While the shell flies, the game shows derivatives (tangent slope) and integrals (Euler's method, velocity → position) in real time.
+A series of browser simulations where you take on a role (a howitzer gunner, an F1 race engineer, ...) and learn a piece of math by working it with your own hands.
+
+| # | Episode | Math |
+|---|---|---|
+| 01 | [Calculus Howitzer](episodes/01-calculus-howitzer/) | derivatives, integrals, numerical integration |
 
 ## Run
 
-Open `index.html` in a browser. There is no build step.
+```bash
+pnpm install
+pnpm dev          # http://localhost:5173/ (landing), /episodes/01-calculus-howitzer/
+pnpm build        # → dist/ (static site)
+pnpm check        # typecheck + dependency rules + unit tests
+pnpm test:e2e     # browser tests (uses the system Chrome; set PW_CHANNEL= to use Playwright's Chromium)
+```
 
-## Structure
+## Layout
 
-- `index.html`: the whole game (HTML, CSS and JS in one file)
-  - `stepSim()`: numerical integration in Δt = 0.01 s steps
-  - `accel()`: acceleration from gravity + air drag/wind
-  - `CHARGES`: muzzle speed per charge, 60 · 75 · 93 · 115 m/s (ranges overlap, so every target is reachable)
-  - `neededAngles()`: uses the vacuum trajectory formula to find the two launch angles (low and high) needed with the current charge
-  - `TUT`: "learn calculus" lessons for people who struggle with math (hands-on missions + quick checks; starts automatically on the first visit)
-  - `stepOnce()` / `setPaused()`: step 0.5 s at a time, and pause (used to experience integrals and derivatives)
-  - `renderLog()`: free-play shot log (the last 4 shots at the current target)
-  - `I18N` / `tr(ko, en)` / `P(ko, en)`: Korean/English switch. Fixed text uses `data-i18n` keys; dynamic text is picked with `tr()` each time it's drawn. The choice is saved in localStorage
+- `engine/` — shared engine (`@series/engine`), imported by every episode
+  - `math/` integrators, quadratic roots, seeded RNG, angle conversion
+  - `sim/` fixed-timestep loop (pause, single step, playback speed)
+  - `ui/` theme tokens and components CSS, canvas sizing, tooltips, storage
+  - `i18n/` Korean/English strings (`tr`, `P`, `data-i18n`); the language choice is shared across the series
+  - `tutorial/` mission engine: coach-mark card, gated steps, quizzes
+- `episodes/NN-slug/` — one episode each
+  - `src/model/` pure math only (no DOM), every function unit-tested in `tests/`
+  - `episode.json` metadata used by the landing page
+- `episodes/_template/` — copy this to start a new episode (see its README)
+- `site/` — landing page, built to `/`
+- `e2e/` — Playwright tests. `e2e/legacy/howitzer.html` is the original single-file game, kept as the reference for `parity.spec.ts`
+- `docs/setup-log.md` — what was set up, step by step
 
-## Modes
+## Rules
 
-- **Vacuum**: solved exactly by the parabola formula. The hint button shows the launch angle you need
-- **Air drag + wind**: no closed-form formula, so it's computed by numerical integration only
-
-## Ideas
-
-- High scores, moving targets, shell types, destructible terrain
+- Episodes import only `@series/engine`, never another episode (`pnpm check:boundaries`).
+- Every formula and physical value has its source in a comment next to the code.
+- Core math functions have unit tests.
+- Every episode must be playable on a phone.

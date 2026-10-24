@@ -1,0 +1,7 @@
+/* 자주포 전용: 전장 캔버스와 그 위의 숫자판·결과 배너, 아래 그래프 */
+.field{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--sky)}
+#field{display:block;width:100%;aspect-ratio:16/10;touch-action:manipulation}
+.hud{position:absolute;left:8px;top:8px;font-family:var(--mono);font-size:11.5px;line-height:1.45;background:color-mix(in srgb,var(--panel) 82%,transparent);padding:6px 8px;border-radius:4px;font-variant-numeric:tabular-nums;pointer-events:none}
+.banner{position:absolute;right:8px;top:8px;font-family:var(--display);font-size:18px;padding:4px 10px;border-radius:4px;background:var(--panel)}
+.banner.hit{color:var(--good)} .banner.miss{color:var(--bad)}
+#chart{display:block;width:100%;height:220px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}

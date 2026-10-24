@@ -1,0 +1,23 @@
+/* 시리즈 공통 테마 토큰. 라이트가 기본, 시스템 다크 또는 <html data-theme="dark">면 다크 */
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+:root{
+  --bg:#E7EBE4; --panel:#F3F5F1; --ink:#1B2320; --muted:#5B6862; --line:#C5CEC6;
+  --accent:#D4521C; --blue:#2C6A96; --ground:#7E8F6A; --ground2:#5F6F4E; --sky:#DCE4E3;
+  --good:#2E7D4F; --bad:#B23A2E;
+  --display:"Black Han Sans","IBM Plex Sans KR",system-ui,sans-serif;
+  --body:"IBM Plex Sans KR",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121815; --panel:#1A221E; --ink:#DCE4DD; --muted:#93A39A; --line:#2E3A34;
+  --accent:#F0793F; --blue:#7FB6DE; --ground:#4D5C40; --ground2:#3A4630; --sky:#18211F;
+  --good:#5DBB84; --bad:#E7766A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121815; --panel:#1A221E; --ink:#DCE4DD; --muted:#93A39A; --line:#2E3A34;
+  --accent:#F0793F; --blue:#7FB6DE; --ground:#4D5C40; --ground2:#3A4630; --sky:#18211F;
+  --good:#5DBB84; --bad:#E7766A; color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:15px;line-height:1.55}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto}}

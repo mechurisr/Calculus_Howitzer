@@ -1,0 +1,70 @@
+schema_version: 1.0.0
+mission: software-dev
+profile: comprehensive
+answers:
+  project_intent: >-
+    A long-running series of role-based math education web simulations. Each episode puts the learner in a role
+    (e.g. howitzer gunner, F1 race engineer) and teaches one math concept through direct manipulation, with staged
+    missions and quizzes. Episode 01 is the Calculus Howitzer. Work is produced by AI agents with split roles:
+    a research session files ideas as GitHub Issues, the main session specifies/plans/implements/tests, a review
+    agent (OpenCode + DeepSeek) reviews specs and cross-checks PRs, and a human selects ideas, chooses which review
+    feedback to apply, and merges. The most costly failure is teaching wrong math or wrong physics.
+  languages_frameworks: >-
+    TypeScript (strict) with Vite, no UI framework, Canvas 2D for rendering, pnpm workspaces monorepo:
+    engine/ (@series/engine), episodes/NN-slug/, episodes/_template/, site/. Vitest for unit tests, Playwright for
+    browser and mobile tests. Static site deployed to Cloudflare Pages.
+  testing_requirements: >-
+    Every core calculation function (everything in an episode's src/model/ and engine/src/math/) must have unit
+    tests that check results against an independent reference: an analytic solution, a hand-worked example, or a
+    numerical derivative. Model code must not touch the DOM. Each episode needs a Playwright test that plays it at
+    360px width with touch input. Tests must be deterministic (seeded RNG, controlled clock).
+  quality_gates: >-
+    pnpm check (typecheck, dependency boundaries, unit tests) and pnpm test:e2e must pass. Episodes import only
+    @series/engine and never another episode, enforced by scripts/check-boundaries.mjs. Every formula and physical
+    constant has a comment next to the code naming the formula and its source; values tuned for gameplay are marked
+    as game values, and unverified figures are marked as needing verification. Mobile: playable at 360px width with
+    no horizontal scroll, and every interactive control at least 44x44 CSS px (WCAG 2.5.5).
+  review_policy: >-
+    Each spec gets exactly one review by the review agent, written to spec-review.md in the spec folder, with
+    findings classed as [critical] [recommended] [minor]; the human chooses which findings to apply. Each PR gets a
+    cross-check comment from the review agent with the same classes. The human merges only when CI passes and no
+    unresolved [critical] finding remains. No GitHub approval count is required. Review agents never modify code.
+  performance_targets: >-
+    Simulations run at 60 fps on a mid-range phone; the fixed-timestep loop keeps physics independent of frame rate.
+    No build-time or runtime dependency on external APIs; the only external asset is Google Fonts.
+  deployment_constraints: >-
+    Merging to main auto-deploys to Cloudflare Pages. Work happens on feature branches and lands through PRs;
+    no direct pushes to main. Secrets and tokens are never committed; .env files stay gitignored.
+  documentation_policy: >-
+    Episode specs must contain: role setting, math concepts, learning goals (at most 3), core interaction, staged
+    missions, answer and verification formulas, references, difficulty. The answer and verification formulas live
+    in a separate answers.md next to spec.md so the review agent can solve the missions before seeing the answers.
+    All learner-facing text is provided in both Korean and English. Repo docs and commit messages refer to agents by
+    role (research session, review agent), not by product name. Setup changes are logged in docs/setup-log.md.
+  risk_boundaries: >-
+    If a spec contains a mathematical error or an ambiguity, do not implement it: stop, ask the human, and label the
+    issue needs-clarification. Never present a game-tuned value as a real-world fact. Never commit secrets.
+  amendment_process: >-
+    Charter changes are proposed by an agent in chat or a PR and take effect only after the human approves them.
+  exception_policy: >-
+    Exceptions (for example a temporarily undersized touch target kept for behaviour parity) must be written down
+    in the PR description and in docs/setup-log.md with a follow-up, and approved by the human.
+selected_paradigms:
+  - specification-by-example
+  - trunk-based
+selected_directives:
+  - DIRECTIVE_001
+  - DIRECTIVE_010
+  - DIRECTIVE_024
+  - DIRECTIVE_030
+  - DIRECTIVE_033
+  - DIRECTIVE_045
+  - DIRECTIVE_046
+  - DIRECTIVE_050
+available_tools:
+  - spec-kitty
+  - git
+  - gh
+  - pnpm
+  - vitest
+  - playwright

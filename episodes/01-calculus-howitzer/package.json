@@ -1,0 +1,8 @@
+{
+  "name": "@series/episode-01-calculus-howitzer",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@series/engine": "workspace:*"
+  }
+}

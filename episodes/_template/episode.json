@@ -1,0 +1,11 @@
+{
+  "id": "template",
+  "number": 0,
+  "slug": "_template",
+  "status": "draft",
+  "title": { "ko": "에피소드 제목", "en": "Episode title" },
+  "role": { "ko": "역할", "en": "Role" },
+  "summary": { "ko": "한 줄 소개", "en": "One-line summary" },
+  "concepts": ["수학 개념"],
+  "difficulty": 1
+}

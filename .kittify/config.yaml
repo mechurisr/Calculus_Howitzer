@@ -1,0 +1,19 @@
+project:
+  uuid: 652353a5-6249-49a2-8391-a371eddf8b97
+  slug: calculus-howitzer
+  node_id: 9b395fb422f3
+  build_id: 6eaa7c61-8ba2-5b9c-a5b4-537385213037
+mission_type_activations:
+- software-dev
+- documentation
+- research
+- plan
+vcs:
+  type: git
+agents:
+  available:
+  - claude
+  - opencode
+  auto_commit: true
+  lint_on_edit: false
+charter: .kittify/charter/charter.yaml
