@@ -1,0 +1,16 @@
+{
+  "coordination_branch": "kitty/mission-howitzer-angle-ticks-01M5Q3M8",
+  "created_at": "2026-10-24T14:04:25.914010+00:00",
+  "flattened": false,
+  "friendly_name": "자주포 발사각 슬라이더 눈금",
+  "mission_id": "01M5Q3M8D3DWXT9RR4ZQGJET1P",
+  "mission_number": null,
+  "mission_slug": "howitzer-angle-ticks-01M5Q3M8",
+  "mission_type": "software-dev",
+  "pr_bound": true,
+  "purpose_context": "미적분 자주포 학습자는 지금 슬라이더 위치만으로는 발사각을 가늠하기 어렵다. 눈금과 숫자, 진공·평지 기준 최대 사거리 각(45°) 표시를 더해 튜토리얼 4장의 발사각 개념을 조작 화면에서 바로 확인하게 한다 (Issue #3, 7단계 리허설).",
+  "purpose_tldr": "자주포 발사각 슬라이더에 눈금과 숫자를 달아 각도를 바로 읽게 한다",
+  "slug": "howitzer-angle-ticks-01M5Q3M8",
+  "target_branch": "mission/howitzer-angle-ticks",
+  "topology": "coord"
+}
