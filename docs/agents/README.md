@@ -1,5 +1,23 @@
 # 역할별 지시문
 
+## 작업 공간 (herdr)
+
+herdr 안의 아무 패널에서 `scripts/workspace.sh`를 실행하면 아래 네 패널이 한 번에 뜹니다 (작업 공간 이름 `math-sims`).
+
+```
+┌──────────────────────────┬──────────────────────────┐
+│ 메인 세션 (ms-main)       │ 검토 에이전트 (ms-review) │
+├──────────────────────────┼──────────────────────────┤
+│ 리서치 세션 (ms-research) │ spec-kitty 대시보드       │
+└──────────────────────────┴──────────────────────────┘
+```
+
+- `scripts/workspace.sh --open`: 대시보드를 브라우저로도 열기 · `--close`: 작업 공간 닫기(에이전트 종료)
+- 이미 떠 있으면 새로 만들지 않고 그 작업 공간으로 이동
+- 다른 패널에서 에이전트에게 일을 시킬 때: `herdr agent prompt ms-main "..." --wait`
+- 검토 에이전트 패널은 처음에 OpenCode 기본 agent(Build)로 열림. `/spec-review`, `/pr-check`, `/fact-check` 명령을 쓰거나 Tab으로 agent를 고름. 이 레포에서는 Build·Plan도 파일 수정이 막혀 있음(`opencode.json`)
+
+
 각 세션이 프로젝트 폴더에서 자동으로 읽는 위치와, 역할별 지시문 파일입니다.
 `.claude/`, `.opencode/`는 Spec Kitty가 gitignore로 관리하므로 역할 지시문은 모두 이 폴더(커밋됨)에 둡니다.
 
