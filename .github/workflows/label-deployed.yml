@@ -1,0 +1,24 @@
+# PR이 main에 머지되면(= Cloudflare Pages 배포 시작) 그 PR이 닫는 Issue에 deployed 라벨을 달고 진행 라벨을 뗌.
+# 배포 실패 여부는 보지 않음 — Cloudflare 대시보드에서 확인
+name: Label deployed issues
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+permissions:
+  issues: write
+  pull-requests: read
+jobs:
+  label:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          for n in $(gh pr view "$PR" --repo "$REPO" --json closingIssuesReferences -q '.closingIssuesReferences[].number'); do
+            gh issue edit "$n" --repo "$REPO" --add-label deployed \
+              --remove-label idea --remove-label spec-ready --remove-label building --remove-label review || true
+          done

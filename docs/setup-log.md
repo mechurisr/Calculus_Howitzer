@@ -138,3 +138,14 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 - DeepSeek 호출이 TUI에서도 "Authorization header missing"으로 실패했음. 원인: 전역 설정의 `"apiKey": "{env:HIVE_API_KEY}"`는 `~/.bashrc`가 `~/.config/hive/env`를 불러올 때만 값이 생기는데, 백그라운드 opencode 서비스와 런처로 연 TUI는 `.bashrc`를 거치지 않아 변수가 없었음 (TUI도 이 서비스에 접속)
 - 근본 해결 (2026-10-24): 사람이 `opencode auth login hive`로 키를 OpenCode 인증 저장소에 등록(`opencode auth list` → Hive AI stored) → 전역 `~/.config/opencode/opencode.json`에서 `apiKey` 줄 삭제(백업 `opencode.json.bak-20261024-212723`) → `opencode service restart`. 환경 변수 없이 기본 모드 `opencode run`으로 호출 성공 확인. `~/.config/hive/env`와 `.bashrc` 줄은 그대로 둠
 - `AGENTS.md`의 추가 절은 Spec Kitty 표시 블록(`spec-kitty:orientation`) 밖에 있음. `spec-kitty init`·`upgrade` 뒤 지워지지 않았는지 확인할 것
+
+## 5단계: GitHub와 배포 (2026-10-24)
+
+- Issue 폼 `.github/ISSUE_TEMPLATE/episode-idea.yml` (라벨 `idea` 자동). 항목은 리서치 세션 Issue 형식과 같음(역할 설정, 수학 개념, 학습 목표 3개 이내, 핵심 인터랙션, 실제 데이터·물리값 표, 참고 자료 필수, 기존 주제와의 차이, 난이도). `docs/agents/research.md`의 제목 수준을 폼 출력과 같은 `###`로 맞춤
+- PR 템플릿 `.github/pull_request_template.md`: 구현 요약, 수학 검증 결과(표), 스크린샷(데스크톱·360px), 리뷰 요청 사항 + 헌장 확인 목록
+- CI `.github/workflows/ci.yml`: PR·main push마다 `pnpm check` → Playwright 번들 Chromium으로 `pnpm test:e2e`(`PW_CHANNEL=""`), 실패 시 리포트 업로드. Action 버전은 최신 릴리스 조회로 결정: checkout@v7, setup-node@v7, pnpm/action-setup@v6(packageManager의 pnpm 12.14.0 사용), upload-artifact@v7
+- `.github/workflows/label-deployed.yml`: PR이 main에 머지되면 그 PR이 닫는 Issue에 `deployed`, 진행 라벨 제거 (배포 성공 여부는 보지 않음)
+- Cloudflare Pages: `wrangler.toml`(name `math-role-sims`, `pages_build_output_dir = "./dist"`), `.node-version`(26). pnpm 버전은 파일로 지정할 수 없어 대시보드 환경 변수 `PNPM_VERSION=12.14.0` 필요(기본 10.11.1). 연결 절차: `docs/deploy.md`
+- `404.html` 추가: Cloudflare Pages는 404.html이 없으면 없는 주소마다 루트(랜딩)를 보여 줌(SPA 가정)
+- 레포: 공개, Actions 켜짐, main 보호 없음 → 보호 규칙은 선택 사항으로 `docs/deploy.md`에 안내
+- 로컬에서 확인 못 한 것: CI 워크플로 실제 실행(번들 Chromium에서 이전 비교 테스트), Cloudflare 빌드 → 설정 PR을 열면 확인

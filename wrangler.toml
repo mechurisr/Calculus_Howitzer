@@ -1,0 +1,5 @@
+# Cloudflare Pages 설정 (Git 연동). 빌드 명령·환경 변수는 대시보드에서 설정 — docs/deploy.md
+# name 은 Cloudflare 에서 만든 Pages 프로젝트 이름과 같아야 함
+name = "math-role-sims"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-01"
