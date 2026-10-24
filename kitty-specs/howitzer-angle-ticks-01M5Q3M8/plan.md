@@ -10,7 +10,7 @@
 ## Technical Context
 
 **Language/Version**: TypeScript 7.0 (strict), HTML/CSS — 기존 모노레포 그대로
-**Primary Dependencies**: Vite 8.3.5, `@series/engine` (i18n, storage). 새 의존성 없음
+**Primary Dependencies**: Vite 8.3.5, `@series/engine` (i18n, storage, tutorial — `onEnd` 콜백 1개 추가). 새 의존성 없음
 **Storage**: 브라우저 localStorage — 엔진 `save/load` (`series:howitzer:angleNoteSeen`, 기존 `series:howitzer:tutDone`)
 **Testing**: Vitest(눈금 비율 함수, 표시 조건 함수), Playwright(360/768/1280 위치·겹침, 언어 전환, 튜토리얼 시점, 이전 비교). CI에서 눈금·모바일 테스트는 Chromium·Firefox·WebKit
 **Target Platform**: 최신 데스크톱·모바일 브라우저 (Chromium, Firefox, WebKit/iOS Safari)
@@ -65,6 +65,7 @@ episodes/01-calculus-howitzer/
 │   ├── main.ts                # 눈금 초기화, 언어 변경·튜토리얼 종료 때 갱신
 │   └── style.css              # 손잡이 CSS(폭 22px), .ang-track, 눈금 3줄
 └── tests/ticks.test.ts        # (신규) 단위 테스트
+engine/src/tutorial/index.ts   # 선택 콜백 onEnd 추가 (튜토리얼 종료·건너뛰기 때 주석 갱신). 하위 호환, 다른 동작 불변
 e2e/
 ├── ticks.spec.ts              # (신규) 위치·겹침·언어·튜토리얼 시점
 ├── parity.spec.ts             # 스크린샷 비교 때 새 페이지의 눈금·손잡이 스타일 숨김
