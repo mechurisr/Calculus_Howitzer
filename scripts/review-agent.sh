@@ -17,9 +17,33 @@ echo "로그: $log"
 # 단계마다 20분 제한: 모델·도구가 멈추면 무한정 기다리지 않음 (REVIEW_TIMEOUT 으로 바꿀 수 있음)
 # --standalone: 백그라운드 opencode 서비스를 거치면 도구 실행 뒤 다음 요청을 보내지 않고 멈추는 일이 두 번 있었음
 #   (2026-10-24, 세션 기록·네트워크로 확인 — docs/setup-log.md). 실행마다 따로 서버를 띄우고 상세 로그를 logs/ 에 남김
+# 실행이 결과물을 남기기 전에 조용히 끝나는 일이 있음 (OpenCode 2.1.4 — 도구 실행 뒤 다음 응답 없이 종료/멈춤,
+#   docs/setup-log.md 7단계). 끝난 뒤 결과물이 있는지 확인하고, 없으면 같은 세션을 이어받아 마무리를 요청한다 (최대 3번)
+count_marker() {  # PR·Issue 에 검토 에이전트 댓글이 몇 개인지
+  gh "$1" view "$target" --json comments -q "[.comments[].body | select(test(\"$2\"))] | length"
+}
+done_check() {
+  case $1 in
+    spec-review)  [[ -e $target/spec-review.md ]] ;;
+    spec-compare) [[ -e $target/spec-review.md ]] && ! grep -q '(2차에서 작성)' "$target/spec-review.md" ;;
+    pr-check)     (( $(count_marker pr '크로스체크 \\(검토 에이전트\\)') > before )) ;;
+    fact-check)   (( $(count_marker issue '팩트체크 \\(검토 에이전트\\)') > before )) ;;
+  esac
+}
+oc() { timeout "${REVIEW_TIMEOUT:-30m}" opencode run --standalone --print-logs --log-level "${REVIEW_LOG_LEVEL:-info}" "$@" 2>>"${log%.log}.debug.log" | tee -a "$log"; }
 run() {
-  timeout "${REVIEW_TIMEOUT:-30m}" opencode run --standalone --print-logs --log-level "${REVIEW_LOG_LEVEL:-info}" \
-    --agent "$1" "$2" 2>>"${log%.log}.debug.log" | tee -a "$log"
+  local a=$1 title="review $1 $target $(date +%s)"
+  case $a in pr-check) before=$(count_marker pr '크로스체크 \\(검토 에이전트\\)') ;; fact-check) before=$(count_marker issue '팩트체크 \\(검토 에이전트\\)') ;; esac
+  oc --title "$title" --agent "$a" "$2"
+  for try in 1 2 3; do
+    done_check "$a" && return 0
+    local sid
+    sid=$(opencode session list -n 30 --format json | jq -r --arg t "$title" '[.[] | select(.title == $t)][0].id // empty')
+    [[ -z $sid ]] && { echo "세션을 찾지 못함: $title" >&2; return 1; }
+    echo "결과물이 없어 세션을 이어받음 ($try/3): $sid" | tee -a "$log"
+    oc --session "$sid" --agent "$a" "실행이 중간에 끊겼다. 지금까지 조사한 내용으로 지시문대로 마무리하고, 결과물(댓글 또는 spec-review.md)을 반드시 남겨."
+  done
+  done_check "$a" || { echo "3번 이어받아도 결과물이 없음: $a $target (로그: $log)" >&2; return 1; }
 }
 case $agent in
   spec)
