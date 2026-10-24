@@ -1,6 +1,7 @@
 // 발사각 슬라이더 눈금 (kitty-specs/howitzer-angle-ticks-01M5Q3M8): 배치·겹침·언어·표시 시점·손잡이 위치
 // CI 에서는 chromium·firefox·webkit 세 엔진으로 실행 (playwright.config.ts)
 import { expect, test, type Page } from '@playwright/test';
+import { CURRENT, open, walkTutorial } from './helpers';
 
 const URL = '/episodes/01-calculus-howitzer/';
 type Box = { x: number; y: number; w: number; h: number };
@@ -44,11 +45,14 @@ for (const width of [360, 768, 1280]) {
 test('주석 문구: 한국어·영어, 조건 없는 "최대"·대칭 표시 없음 (FR-005, SC-003, C-006)', async ({ page }) => {
   await openPage(page, 1280, DONE);
   const note = page.locator('.tick-note');
-  await expect(note).toHaveText('45° · 같은 높이에서 사거리 최대');
+  await expect(note).toHaveText('45° · 진공·같은 높이에서 사거리 최대');
   await page.click('#langBtn');
-  await expect(note).toHaveText('45° · longest range on level ground');
+  await expect(note).toHaveText('45° · longest range at equal height (vacuum)');
   const text = await page.locator('.ang-ticks').innerText();
   expect(text).not.toMatch(/같은 거리|same distance/);
+  // "최대"·"longest"가 나오면 진공 조건도 함께 (공기저항 모드의 최대는 약 43°)
+  await page.click('#langBtn');
+  for (const t of [await note.innerText(), text]) if (/최대|longest/.test(t)) expect(t).toMatch(/진공|vacuum/);
 });
 
 test.describe('주석 표시 시점 (FR-006)', () => {
@@ -64,7 +68,20 @@ test.describe('주석 표시 시점 (FR-006)', () => {
     await openPage(page, 1280, { 'series:howitzer:angleNoteSeen': '1' });
     await expect(page.locator('.tick-note')).toBeVisible();
   });
-  // 4장 "45°는 사거리 그래프의 꼭대기" 단계 진입 자체는 앞 단계 gate(발사·일시정지 등) 때문에 자동화가 무거워 수동 확인 (quickstart.md 2, analysis C1)
+  // 실제로 튜토리얼을 4장 "45°는 사거리 그래프의 꼭대기"(16단계)까지 진행: 15단계까지 숨김, 16단계 진입 시 보임 (크로스체크 #3)
+  test('튜토리얼 4장 해당 단계에 들어가면 보임', async ({ page }) => {
+    test.setTimeout(300_000);
+    await open(page, CURRENT, { tutorial: true, ticks: true });
+    let reached = false;
+    await walkTutorial(page, async (_i, step) => {
+      const n = Number(/(\d+) \/ 22/.exec(step)?.[1]);
+      if (n < 16) expect(await page.locator('.tick-note').isHidden(), `${step}에서 주석이 보이면 안 됨`).toBe(true);
+      if (n === 16) { reached = true; return true; }
+    });
+    expect(reached).toBe(true);
+    await expect(page.locator('.tick-note')).toBeVisible();
+    await expect(page.locator('#ang')).toHaveAttribute('aria-describedby', 'angNoteSr');
+  });
 });
 
 // 손잡이는 의사요소라 DOM 좌표가 없다 → 스크린샷에서 손잡이 색(--accent) 픽셀의 가로 중심을 재서 눈금 중심과 비교 (research R-4)
@@ -104,4 +121,16 @@ test('손잡이 중심과 눈금 차이 ≤ 2px: 360·768·1280px, 창 크기 �
       expect(diff, `${width}px ${deg}°: ${diff.toFixed(2)}px`).toBeLessThanOrEqual(2);
     }
   }
+});
+
+test('다크 모드 360px: 눈금 15개·숫자 8개가 보이고 숫자 색이 배경과 다름 (NFR-005)', async ({ browser }) => {
+  const ctx = await browser.newContext({ colorScheme: 'dark', viewport: { width: 360, height: 900 } });
+  const page = await ctx.newPage();
+  await page.addInitScript(() => localStorage.setItem('series:howitzer:tutDone', '1'));
+  await page.goto(URL);
+  await expect(page.locator('.tick')).toHaveCount(15);
+  await expect(page.locator('.tick-label')).toHaveCount(8);
+  const [fg, bg] = await page.evaluate(() => [getComputedStyle(document.querySelector('.tick-label')!).color, getComputedStyle(document.querySelector('.panel')!).backgroundColor]);
+  expect(fg).not.toBe(bg);
+  await ctx.close();
 });

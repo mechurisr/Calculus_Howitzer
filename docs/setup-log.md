@@ -167,3 +167,44 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 - `spec-kitty dashboard`는 백그라운드 서버를 띄우고 주소(http://127.0.0.1:9237)만 출력하고 끝남. 대시보드가 헌장 사전 점검 경고 "synthesized_drg missing"을 냄 → `spec-kitty charter synthesize` 실행(새 프로젝트용 최소 파일 `.kittify/doctrine/PROVENANCE.md`, `.kittify/charter/synthesis-manifest.yaml` 생성) → `charter preflight` 통과. 경고 기록 `.kittify/preflight-warning.json`은 gitignore
 - OpenCode가 DeepSeek을 쓰는 설정: 사람이 완료(Hive AI provider, `opencode auth login hive`) — 4단계 기록 참고
 - 시험: 작업 공간을 실제로 띄워 네 패널 확인 — 메인·리서치 Claude Code idle, OpenCode에 "DeepSeek V4.1 Flash Hive AI" 표시, 대시보드 주소 출력
+
+## 7단계: 리허설 — 발사각 슬라이더 눈금 (2026-10-24~25, Issue #3, PR #5)
+
+흐름 2~8을 작은 기능 하나로 한 바퀴. 미션 `kitty-specs/howitzer-angle-ticks-01M5Q3M8/`, 브랜치 `mission/howitzer-angle-ticks`.
+
+### 단계별 결과
+
+| 흐름 | 결과 |
+|---|---|
+| 1·2 아이디어·채택 | Issue #3 등록 → 검토 에이전트 팩트체크(7분) — 제가 쓴 "45°가 최대", "30°·60° 같은 거리"가 이 게임(포구 높이·지형·공기저항)에서는 틀렸다고 계산 근거와 함께 지적 → 사람 채택 |
+| 3 스펙 | `/spec-kitty.specify` + `answers.md` 분리. 덮어쓰기 템플릿(Episode Design) 정상 적용 |
+| 4 스펙 검토 | 1차·2차 [치명적] 0 · [권장] 17 · [사소함] 8. 2차가 제 스펙과 1차 풀이의 공통 오류(슬라이더 폭 210→206px, 브라우저 기본 margin 2px)를 세 엔진 UA 스타일시트로 확인해 찾음 |
+| 5 반영·계획·작업 | 사람이 7묶음 모두 반영 선택 → plan(결정 R-1~R-7) → tasks(WP 3개) → analyze(ready) |
+| 6 구현 | WP01은 Spec Kitty lane에서, WP02·03은 lane 충돌 때문에 기능 브랜치에서 직접 (아래 "브랜치 구조"). 단위 52개, 브라우저 Chromium 20개 + CI Firefox·WebKit |
+| 7 크로스체크 | 3번째 실행에서 성공: [치명적] 0 · [권장] 4 · [사소함] 4 → 사람이 8개 모두 반영 선택 |
+| 8 머지 | 사람 |
+
+### 바뀐 도구·설정
+
+- `opencode.json`: 검토 agent 4개 모두 `"*": "deny"` 기본 거부 + 필요한 도구만 허용. `execute`(Code Mode) 거부. `question` 거부(비대화식 실행에서 무한 대기). 크로스체크·팩트체크·2차 검토에 `grep` 도구와 `grep`/`head`/`wc` 허용 (OpenCode는 파이프로 이은 명령을 하나씩 검사 — 시험으로 확인). 1차 검토는 `grep` 계속 거부(answers.md 격리)
+- `scripts/review-agent.sh`: `--standalone`(매 실행 별도 서버), 상세 로그 `logs/*.debug.log`, 단계별 시간 제한 30분, 실행 뒤 결과물 확인(댓글·spec-review.md) → 없으면 고유 제목으로 세션을 찾아 이어받기(최대 3번)
+- `scripts/review-log.sh` 신규: 최근 검토 로그를 실시간 표시. `scripts/workspace.sh`의 검토 패널을 OpenCode TUI 대신 이 뷰어로
+- `docs/agents/review-pr.md`: PR 범위만, `node_modules` 조사 금지, 도구 호출 약 40회, 마지막에 반드시 댓글
+- `playwright.config.ts`: projects — chromium(전체) / firefox·webkit(눈금·모바일, CI만). `ci.yml`: 세 엔진 설치
+- `e2e/helpers.ts`: 이전 비교는 페이지 스크립트 전에 `data-ticks`를 지워 원본 배치로 비교. 튜토리얼 자동 진행을 공용 함수 `walkTutorial`로
+- `engine/src/tutorial`: 선택 콜백 `onEnd`
+
+### 막힌 지점과 대응
+
+1. **검토 에이전트 멈춤/조용한 종료 (OpenCode 2.1.4)**: 도구 실행 뒤 다음 모델 요청을 보내지 않고 멈추거나(Hive로 연결 없음 — 세션 기록·`ss`로 확인), 다음 단계 시작 직후 출력 없이 exit 0. 백그라운드 서비스·standalone 모두에서 발생, `execute` 사용 세션에서 잦음 → `execute` 거부, 시간 제한, 결과물 확인·이어받기로 대응. 근본 원인은 미확인 (Hive 대시보드 요청 기록으로 추가 확인 가능)
+2. **클라이언트만 끈 세션이 서비스에서 계속 실행**: 멈춘 세션의 `opencode run`을 kill해도 백그라운드 서비스의 세션은 남아, 작업 공간 OpenCode 패널이 그 세션을 열자 다시 진행되며 정리된 `spec-review.md`를 덮어씀(spec-kitty 자동 커밋까지 됨) → 패널 Esc로 중단, `15908e5` 버전으로 복구(`9ec11c4`), 리허설 검토 세션 삭제. 이후 검토는 `--standalone`
+3. **`execute`(Code Mode) 우회 경로**: 직접 파일 접근(require·Deno·file://)은 막혀 있지만 코드 안에서 `tools.read`로 다른 도구 호출 가능 → 거부
+4. **`python3 -c`로 파일 쓰기 가능**: 2차 검토가 `python3 -c`로 spec-review.md를 씀. 1차에서는 편집 금지 우회가 될 수 있음 (미해결 — 1차의 `python3 -c` 제거 검토)
+5. **브랜치 구조 (Spec Kitty 3.2.7 lane ↔ PR 흐름)**: Spec Kitty는 조정용 브랜치 `kitty/mission-…`에 WP 상태를 자동 커밋하고 lane 브랜치에 자동 rebase. 계획 문서를 기능 브랜치에 두고 거기에 직접 커밋하면 두 브랜치의 `kitty-specs/`가 갈라져, WP 이동마다 "lane 브랜치에 kitty-specs 변경 금지" 거부와 lane 할당 병합 충돌이 연쇄 → WP02부터 lane 없이 기능 브랜치에서 구현. 기능 브랜치의 Spec Kitty 상태(`status.json`)는 기준이 아님(비어 있음, WP02·03 lane 상태 미반영)
+6. **분석 보고서 무효화**: analyze 뒤 spec·plan을 고치면 implement가 `stale_analysis_report`로 거부 → 재기록 필요
+7. **WP 리뷰 점검 #1(죽은 코드)**: 계산만 담는 기반 WP는 운영 코드 호출처가 다음 WP에 있어 구조적으로 FAIL → 사람이 예외 승인. WP는 "계산 + 그 계산을 쓰는 화면"을 같이 묶는 편이 맞음
+8. **Spec Kitty 기준선 테스트 오인**: 테스트 도구를 pytest로 판단해 "기준선 실패 1건" 기록 → 삭제
+9. **CI 전 머지**: PR #2가 CI 완료 전에 머지됨(결과는 통과). main 보호 규칙이 없어서 가능
+10. **로컬 테스트가 옛 서버를 재사용**: 사람에게 보여 주려고 띄운 `pnpm preview`의 node 프로세스가 남아 Playwright(`reuseExistingServer`)가 옛 빌드를 검사 → 프로세스 정리. `pnpm preview`를 끌 때 셸만 죽고 node가 남음
+11. **라벨 `building` 누락**: 구현 시작 때 Issue 라벨 변경을 빠뜨림
+12. **자동 커밋 메시지 형식**: Spec Kitty 자동 커밋(`Add plan for feature …` 등)은 Conventional Commits가 아님. `setup-plan`·`finalize-tasks`는 일부 파일만 커밋해 나머지를 따로 커밋해야 함

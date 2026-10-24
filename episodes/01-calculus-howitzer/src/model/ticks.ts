@@ -9,6 +9,11 @@ export const TICK_STEP = 5;
 // 근거: answers.md V3 (이 게임은 포구가 지면보다 높아 실제 최대는 약 44.3°라서 주석에 "같은 높이" 조건을 붙임)
 export const EMPHASIS_ANGLE = 45;
 
+// 발사각을 슬라이더 범위로 자름. 게임 코드(game.ts setAngle·튜토리얼 조준 제안)도 이 함수를 써서 범위가 한 곳에서만 정해짐
+export function clampAngle(deg: number): number {
+  return Math.min(ANGLE_MAX, Math.max(ANGLE_MIN, deg));
+}
+
 // 각도 → 트랙 위 비율 f(θ) = (θ − 10)/70.
 // 손잡이 중심 x(θ) = w/2 + f(θ)·(L − w)  (L = 슬라이더 상자 폭, w = 손잡이 폭 — answers.md V1).
 // px 변환은 CSS 가 한다: left = calc(var(--thumb)/2 + var(--f) * (100% − var(--thumb)))

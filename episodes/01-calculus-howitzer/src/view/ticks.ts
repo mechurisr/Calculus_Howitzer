@@ -4,7 +4,7 @@
 import { load, save } from '@series/engine/ui';
 import { ANGLE_NOTE_SEEN_KEY, EMPHASIS_ANGLE, angleFraction, angleNoteVisible, tickMarks } from '../model/ticks';
 
-let note: HTMLElement | null = null;
+let note: HTMLElement | null = null, srNote: HTMLElement | null = null;
 
 function el(cls: string, f: number, text?: string) {
   const e = document.createElement('span');
@@ -23,11 +23,20 @@ export function renderTicks(root: HTMLElement) {
   note = el('tick-note', angleFraction(EMPHASIS_ANGLE));
   note.dataset.i18n = 'angNote';
   notes.append(note);
+  // 눈금 줄은 장식이라 화면 낭독기에서 숨기지만(aria-hidden), 주석은 학습 내용이라 보이지 않는 설명으로 따로 둔다.
+  // 주석이 보일 때만 슬라이더가 이 설명을 가리켜(aria-describedby) 값과 함께 읽힘
+  srNote = document.createElement('span');
+  srNote.id = 'angNoteSr'; srNote.className = 'sr-only'; srNote.dataset.i18n = 'angNote';
+  root.parentElement!.append(srNote);
 }
 
 // 주석 표시: 튜토리얼 4장 해당 단계를 봤거나 튜토리얼을 끝냈/건너뛰었으면 보임 (FR-006)
 export function refreshAngleNote() {
-  if (note) note.hidden = !angleNoteVisible({ seen: load(ANGLE_NOTE_SEEN_KEY) === '1', tutDone: load('howitzer:tutDone') === '1' });
+  if (!note || !srNote) return;
+  const visible = angleNoteVisible({ seen: load(ANGLE_NOTE_SEEN_KEY) === '1', tutDone: load('howitzer:tutDone') === '1' });
+  note.hidden = srNote.hidden = !visible;
+  const ang = document.getElementById('ang')!;
+  if (visible) ang.setAttribute('aria-describedby', srNote.id); else ang.removeAttribute('aria-describedby');
 }
 
 // 튜토리얼 4장 "45°는 사거리 그래프의 꼭대기" 단계에 들어가면 호출 (missions.ts)

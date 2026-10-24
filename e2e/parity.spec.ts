@@ -1,7 +1,7 @@
 // 엔진 이전 회귀 검사: 기존 단일 파일(e2e/legacy/howitzer.html)과 새 빌드를 같은 시드·같은 조작으로 돌려
 // 문구, 버튼 상태, 캔버스 픽셀이 모두 같은지 비교
 import { expect, test, type Page } from '@playwright/test';
-import { CURRENT, LEGACY, advance, fireAndLand, open, setAngle, snapshot, tap } from './helpers';
+import { CURRENT, LEGACY, advance, fireAndLand, open, setAngle, snapshot, tap, walkTutorial } from './helpers';
 
 // 프레임을 한 장씩 돌려 느림 (한 테스트에 수 분)
 test.describe.configure({ timeout: 900_000 });
@@ -30,27 +30,9 @@ async function freePlay(page: Page) {
   return out;
 }
 
-// 튜토리얼 끝까지 자동 진행. 다음 버튼이 막혀 있으면: 퀴즈 보기 차례로 고르기 → (발사 가능하면) 각도 버튼과 발사 번갈아 →
-// '계속'이 잠겼으면 0.5초 진행 → 단계가 일시정지를 원하면 정지, 아니면 이어서 날리기
 async function tutorialWalk(page: Page) {
   const out: [string, Snap][] = [];
-  const text = async (sel: string) => (await page.locator(sel).textContent()) ?? '';
-  let quizPick = 0, c = 0;
-  for (let i = 0; i < 300 && await page.locator('#tut').isVisible(); i++) {
-    out.push([`${i} ${await text('#tutStep')}`, await snapshot(page)]);
-    if (await page.locator('#tutNext').isEnabled()) { await tap(page, '#tutNext'); quizPick = 0; c = 0; await advance(page, 100); continue; }
-    const quiz = page.locator('#tutBody .quiz button');
-    if (await quiz.count()) { await tap(page, '#tutBody .quiz button', quizPick++ % await quiz.count()); await advance(page, 100); continue; }
-    const acts = page.locator('#tutBody .act'), wantPause = (await text('#tutNext')).includes('일시정지');
-    const paused = (await text('#tPause')).includes('계속');
-    if (await page.locator('#tFire').isEnabled()) {
-      if (await acts.count() && c % 2 === 0) await tap(page, '#tutBody .act', (c >> 1) % await acts.count());
-      else await tap(page, '#tFire');
-      c++;
-    } else if (await page.locator('#tStep').isEnabled() && await page.locator('#tPause').isDisabled()) await tap(page, '#tStep');
-    else if (await page.locator('#tPause').isEnabled() && (paused || wantPause)) await tap(page, '#tPause');
-    await advance(page, 1200);
-  }
+  await walkTutorial(page, async (i, step) => { out.push([`${i} ${step}`, await snapshot(page)]); });
   out.push(['end', await snapshot(page)]);
   return out;
 }

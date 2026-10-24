@@ -7,6 +7,7 @@ import { CHARGES, DT, G, GUN_X, HIT_R, W } from './model/constants';
 import { groundHeight } from './model/terrain';
 import { advance, checkImpact, muzzlePos, neededAngles as solveAngles, type Body } from './model/ballistics';
 import { measureRate as rate, pickCharge, type ShotRecord } from './model/aim';
+import { clampAngle } from './model/ticks';
 
 export interface Shot extends Body { v0: number; ang: number; y0: number; tid: number; air: boolean }
 export interface Result extends ShotRecord { t: number; err: number; hit: boolean; n?: number }
@@ -45,7 +46,7 @@ export function newTarget() {
 // 장약: 실제 자주포처럼 포구속도는 몇 단계로만 고르고, 세밀한 조준은 발사각으로 함
 export const chargeName = (v: number) => { const n = (CHARGES as readonly number[]).indexOf(v) + 1; return tr(n + '호', 'Charge ' + n); };
 export function setCharge(v: number) { vel.value = String(v); vel.dispatchEvent(new Event('input')); }
-export const clampAng = (a: number) => Math.min(80, Math.max(10, a));
+export const clampAng = clampAngle;
 export function setAngle(a: number) { ang.value = String(clampAng(a)); ang.dispatchEvent(new Event('input')); }
 
 // 탄착 결과 문구: 배너("+40 m 멀다")와 사격 기록("40 m 멀다")이 같이 씀

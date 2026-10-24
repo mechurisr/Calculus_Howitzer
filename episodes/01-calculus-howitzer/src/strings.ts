@@ -10,8 +10,8 @@ export const STRINGS = {
   aField:P('포격 전장','Battlefield'),aPanel:P('사격 통제','Fire control'),aEnv:P('환경','Environment'),
   mVac:P('진공 (식으로 풀림)','Vacuum (formula)'),mAir:P('공기저항 + 바람','Air drag + wind'),
   angL:P('발사각 θ','Launch angle θ'),
-  // 45° 주석: 진공·발사점과 착탄점 높이가 같을 때 사거리 최대 (answers.md V3)
-  angNote:P('45° · 같은 높이에서 사거리 최대','45° · longest range on level ground'),
+  // 45° 주석: 진공이고 발사점과 착탄점 높이가 같을 때 사거리 최대 (answers.md V3). 공기저항 모드의 최대는 약 43°라 "진공"을 뺄 수 없음
+  angNote:P('45° · 진공·같은 높이에서 사거리 최대','45° · longest range at equal height (vacuum)'),
   aAngDown:P('각도 줄이기','Lower angle'),aAngUp:P('각도 늘리기','Raise angle'),
   chgL:P('장약 (포구속도 v₀)','Charge (muzzle speed v₀)'),
   fire:P('발사','FIRE'),step05:P('0.5초 진행 ⏭','Step 0.5 s ⏭'),hintBtn:P('계산 힌트','Hint'),newT:P('새 목표','New target'),

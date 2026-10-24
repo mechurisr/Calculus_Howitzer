@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ANGLE_MAX, ANGLE_MIN, angleFraction, angleNoteVisible, tickMarks } from '../src/model/ticks';
+import { ANGLE_MAX, ANGLE_MIN, angleFraction, angleNoteVisible, clampAngle, tickMarks } from '../src/model/ticks';
 
 describe('angleFraction (answers.md V1의 비율)', () => {
   it('양 끝과 가운데: 10° → 0, 45° → 0.5, 80° → 1', () => {
@@ -59,5 +59,15 @@ describe('angleNoteVisible (주석 표시 조건)', () => {
     [true, true, true],
   ])('seen=%s, tutDone=%s → %s', (seen, tutDone, want) => {
     expect(angleNoteVisible({ seen, tutDone })).toBe(want);
+  });
+});
+
+describe('clampAngle (슬라이더 범위 10~80°)', () => {
+  it('범위 밖은 끝값으로, 안쪽은 그대로', () => {
+    expect(clampAngle(5)).toBe(10);
+    expect(clampAngle(95)).toBe(80);
+    expect(clampAngle(37.5)).toBe(37.5);
+    expect(clampAngle(ANGLE_MIN)).toBe(10);
+    expect(clampAngle(ANGLE_MAX)).toBe(80);
   });
 });
