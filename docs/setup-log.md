@@ -109,3 +109,32 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 - `.kittify/overrides/missions/software-dev/templates/spec-template.md` (resolver가 OVERRIDE 계층으로 선택하는 것 확인)
 - 기본 템플릿 앞에 "Episode Design" 필수 섹션 추가: 역할 설정, 수학 개념, 학습 목표(3개 이내), 핵심 인터랙션, 단계별 미션, 정답·검증(→ answers.md), 참고 자료, 난이도
 - 기존 에피소드를 고치는 작은 미션은 바뀌는 항목만 쓰고 나머지는 "N/A — 이유"
+
+## 4단계: 역할별 지시문 (2026-10-24)
+
+`.claude/`, `.opencode/`는 Spec Kitty가 gitignore로 관리하므로 지시문은 모두 커밋되는 위치에 둠. 전체 표: `docs/agents/README.md`
+
+| 역할 | 자동으로 읽는 것 | 지시문 | 강제 장치 |
+|---|---|---|---|
+| 메인 세션 (Claude Code) | 루트 `CLAUDE.md` → `@docs/agents/main.md` import | `docs/agents/main.md` | — |
+| 리서치 세션 (Claude Code) | `CLAUDE.md` + `--append-system-prompt-file docs/agents/research.md` | `docs/agents/research.md` | `--settings docs/agents/research.settings.json` (Edit·Write·NotebookEdit, git commit/add/push, gh pr, Issue 닫기·삭제 거부) |
+| 검토 에이전트 (OpenCode) | `AGENTS.md`(Spec Kitty 블록 아래에 추가), 루트 `opencode.json` | `docs/agents/review-spec.md`, `review-pr.md`, `review-factcheck.md` | `opencode.json`의 agent별 `permission` |
+
+검토 에이전트 agent 4개 (모델 `hive/deepseek-ai/deepseek-v4.1-flash-1017`, 사람이 전역 설정에 Hive AI provider로 등록함):
+- `spec-review` (1차): `answers.md` 읽기 거부, `grep` 거부, `kitty-specs/*/spec-review.md`만 쓰기 허용, bash는 `ls`·`date`·`python3 -c`만
+- `spec-compare` (2차): `answers.md` 읽기 허용, 쓰기는 `spec-review.md`만
+- `pr-check`: 쓰기 거부, bash는 `gh pr view/diff/checks/comment`, `gh issue view`, `git fetch/log/diff/show`만. PR 브랜치를 체크아웃하지 않음(메인 세션과 같은 폴더)
+- `fact-check`: 쓰기 거부, bash는 `gh issue view/comment`만, webfetch 허용
+- 스펙 검토 지시 (b)는 원문 그대로 넣고, "정답을 보지 말고 먼저 풀기"는 1차·2차 분리 + 읽기 권한으로 강제. 1차가 `python3 -c`로 파일을 여는 우회는 막지 못함(지시로만 금지)
+
+실행: `scripts/review-agent.sh spec|pr-check|fact-check <대상>` (TUI에서는 `/spec-review` 등)
+
+검증:
+- `opencode debug agents`: 4개 agent와 지시문 프롬프트 로드 확인
+- 권한 시험(DeepSeek 실제 호출, 임시 폴더 사용 후 삭제): `spec-review`는 answers.md 읽기·다른 파일 쓰기·`cat answers.md` 거부, spec-review.md 쓰기 성공. `pr-check`는 파일 쓰기·`git push`·`gh pr merge` 거부, `git log` 성공
+- 리서치 세션(`acceptEdits` 모드로 시험): 편집 도구가 제공되지 않음, 역할을 "리서치"로 인식. `git commit`은 지시문 규칙 때문에 시도하지 않아 거부 규칙 자체는 미확인
+
+알게 된 점:
+- 전역 opencode 설정의 API 키는 `{env:HIVE_API_KEY}`, 값은 `~/.config/hive/env`(권한 600)에 있고 `~/.bashrc`가 불러옴. 비대화식 셸(에이전트의 Bash 도구)은 `.bashrc`를 읽지 않음
+- `opencode run`은 기본으로 백그라운드 서비스에 접속하는데, 서비스가 키 없이 떠 있으면 "Authorization header missing". `--standalone`으로 해결 → `scripts/review-agent.sh`가 둘 다 처리
+- `AGENTS.md`의 추가 절은 Spec Kitty 표시 블록(`spec-kitty:orientation`) 밖에 있음. `spec-kitty init`·`upgrade` 뒤 지워지지 않았는지 확인할 것

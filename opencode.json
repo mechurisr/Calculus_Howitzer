@@ -1,0 +1,70 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "spec-review": {
+      "description": "검토 에이전트 1차 스펙 검토: answers.md를 보지 않고 미션을 직접 풀고 spec-review.md 작성",
+      "mode": "primary",
+      "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
+      "prompt": "{file:./docs/agents/review-spec.md}",
+      "permission": {
+        "edit": { "*": "deny", "*kitty-specs/*/spec-review.md": "allow" },
+        "read": { "*": "allow", "*answers.md": "deny", "*.env": "deny", "*.env.*": "deny" },
+        "grep": "deny",
+        "task": "deny",
+        "bash": { "*": "deny", "ls": "allow", "ls *": "allow", "date": "allow", "python3 -c *": "allow" },
+        "webfetch": "allow"
+      }
+    },
+    "spec-compare": {
+      "description": "검토 에이전트 2차 스펙 검토: 1차 풀이를 answers.md와 비교해 spec-review.md 완성",
+      "mode": "primary",
+      "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
+      "prompt": "{file:./docs/agents/review-spec.md}",
+      "permission": {
+        "edit": { "*": "deny", "*kitty-specs/*/spec-review.md": "allow" },
+        "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
+        "task": "deny",
+        "bash": { "*": "deny", "ls": "allow", "ls *": "allow", "date": "allow", "python3 -c *": "allow" },
+        "webfetch": "allow"
+      }
+    },
+    "pr-check": {
+      "description": "검토 에이전트 PR 크로스체크: 수식·단위·경계값·테스트 누락을 보고 PR 댓글만 남김",
+      "mode": "primary",
+      "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
+      "prompt": "{file:./docs/agents/review-pr.md}",
+      "permission": {
+        "edit": "deny",
+        "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
+        "task": "deny",
+        "bash": {
+          "*": "deny",
+          "gh pr view *": "allow", "gh pr diff *": "allow", "gh pr checks *": "allow", "gh pr comment *": "allow",
+          "gh issue view *": "allow",
+          "git fetch *": "allow", "git log *": "allow", "git diff *": "allow", "git show *": "allow",
+          "ls": "allow", "ls *": "allow", "python3 -c *": "allow"
+        },
+        "webfetch": "allow"
+      }
+    },
+    "fact-check": {
+      "description": "검토 에이전트 아이디어 팩트체크: idea Issue의 수치·출처를 확인해 Issue 댓글만 남김",
+      "mode": "primary",
+      "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
+      "prompt": "{file:./docs/agents/review-factcheck.md}",
+      "permission": {
+        "edit": "deny",
+        "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
+        "task": "deny",
+        "bash": { "*": "deny", "gh issue view *": "allow", "gh issue comment *": "allow", "python3 -c *": "allow" },
+        "webfetch": "allow"
+      }
+    }
+  },
+  "command": {
+    "spec-review": { "description": "스펙 검토 1차 (독립 풀이)", "agent": "spec-review", "template": "대상 미션 폴더: $ARGUMENTS\n지시문의 1차 검토를 진행해." },
+    "spec-compare": { "description": "스펙 검토 2차 (정답 비교)", "agent": "spec-compare", "template": "대상 미션 폴더: $ARGUMENTS\n지시문의 2차 검토를 진행해." },
+    "pr-check": { "description": "PR 크로스체크", "agent": "pr-check", "template": "대상 PR 번호: $ARGUMENTS\nPR 크로스체크를 진행하고 PR에 댓글을 남겨." },
+    "fact-check": { "description": "아이디어 Issue 팩트체크", "agent": "fact-check", "template": "대상 Issue 번호: $ARGUMENTS\n팩트체크를 진행하고 Issue에 댓글을 남겨." }
+  }
+}
