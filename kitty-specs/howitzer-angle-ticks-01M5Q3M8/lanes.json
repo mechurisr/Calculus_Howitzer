@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "mission_slug": "howitzer-angle-ticks-01M5Q3M8",
+  "mission_id": "01M5Q3M8D3DWXT9RR4ZQGJET1P",
+  "mission_branch": "kitty/mission-howitzer-angle-ticks-01M5Q3M8",
+  "target_branch": "mission/howitzer-angle-ticks",
+  "lanes": [
+    {
+      "lane_id": "lane-a",
+      "wp_ids": [
+        "WP01"
+      ],
+      "write_scope": [
+        "episodes/01-calculus-howitzer/src/model/ticks.ts",
+        "episodes/01-calculus-howitzer/tests/ticks.test.ts"
+      ],
+      "predicted_surfaces": [
+        "api"
+      ],
+      "depends_on_lanes": [],
+      "parallel_group": 0
+    },
+    {
+      "lane_id": "lane-b",
+      "wp_ids": [
+        "WP02"
+      ],
+      "write_scope": [
+        "engine/src/tutorial/index.ts",
+        "episodes/01-calculus-howitzer/index.html",
+        "episodes/01-calculus-howitzer/src/main.ts",
+        "episodes/01-calculus-howitzer/src/missions.ts",
+        "episodes/01-calculus-howitzer/src/strings.ts",
+        "episodes/01-calculus-howitzer/src/style.css",
+        "episodes/01-calculus-howitzer/src/view/ticks.ts"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "artifact-rendering"
+      ],
+      "depends_on_lanes": [
+        "lane-a"
+      ],
+      "parallel_group": 1
+    },
+    {
+      "lane_id": "lane-c",
+      "wp_ids": [
+        "WP03"
+      ],
+      "write_scope": [
+        ".github/workflows/ci.yml",
+        "e2e/parity.spec.ts",
+        "e2e/ticks.spec.ts",
+        "playwright.config.ts"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "legacy-cleanup"
+      ],
+      "depends_on_lanes": [
+        "lane-b"
+      ],
+      "parallel_group": 2
+    }
+  ],
+  "computed_at": "2026-10-24T16:05:52.350519+00:00",
+  "computed_from": "dependency_graph+ownership",
+  "planning_artifact_wps": [],
+  "planning_commit_sha": "9cf4d1c498dd2de44d53eaad3a2560738a185965"
+}

@@ -7,16 +7,18 @@ requirement_refs:
 - FR-002
 - FR-004
 - FR-006
+planning_base_branch: mission/howitzer-angle-ticks
+merge_target_branch: mission/howitzer-angle-ticks
+branch_strategy: Planning artifacts for this mission were generated on mission/howitzer-angle-ticks. During /spec-kitty.implement this WP may branch from a dependency-specific base, but completed changes must merge back into mission/howitzer-angle-ticks unless the human explicitly redirects the landing branch.
 subtasks:
 - T001
 - T002
 - T003
 phase: Phase 1 - Foundation
 history:
-- !!omap
-  - at: '2026-10-25T00:00:00Z'
-  - actor: system
-  - action: Prompt generated via /spec-kitty.tasks
+- at: '2026-10-25T00:00:00Z'
+  actor: system
+  action: Prompt generated via /spec-kitty.tasks
 agent_profile: implementer-ivan
 authoritative_surface: episodes/01-calculus-howitzer/src/model/
 create_intent:
