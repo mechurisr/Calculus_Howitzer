@@ -149,3 +149,21 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 - `404.html` 추가: Cloudflare Pages는 404.html이 없으면 없는 주소마다 루트(랜딩)를 보여 줌(SPA 가정)
 - 레포: 공개, Actions 켜짐, main 보호 없음 → 보호 규칙은 선택 사항으로 `docs/deploy.md`에 안내
 - 로컬에서 확인 못 한 것: CI 워크플로 실제 실행(번들 Chromium에서 이전 비교 테스트), Cloudflare 빌드 → 설정 PR을 열면 확인
+
+### 5단계 마무리: 배포 확인 (2026-10-24)
+
+- PR #1(1~5단계) CI 통과(4분 14초, 단위 39개·브라우저 10개, Playwright 번들 Chromium에서도 이전 비교 일치) → 사람이 머지(`74dfec2`)
+- Cloudflare: 대시보드의 Create application은 Workers가 기본. 화면 안의 Pages 링크로 들어가야 Pages 프로젝트가 됨 (`docs/deploy.md`)
+- 연결 직후 빌드와 "Retry"는 예전 main 커밋 `a948d79`(package.json 없음)을 빌드해 실패. Retry는 같은 커밋을 다시 빌드하므로 머지 후에도 실패 — 무시. 머지 커밋 `74dfec2`는 자동 빌드·배포 성공
+- 배포 확인: https://math-role-sims.pages.dev/ (200, 랜딩) · `/episodes/01-calculus-howitzer/` (200) · 없는 주소 404 페이지
+
+## 6단계: herdr 작업 공간 (2026-10-24, 브랜치 `setup/workspace`)
+
+- `scripts/workspace.sh`: herdr 작업 공간 `math-sims`에 4패널 — 메인 세션(Claude Code `ms-main`) / 리서치 세션(Claude Code `ms-research`, research.md + 권한 설정) / 검토 에이전트(OpenCode `ms-review`) / spec-kitty 대시보드. `--open`, `--close` 지원, 이미 있으면 그 작업 공간으로 이동. herdr 안(`HERDR_ENV=1`)에서만 실행
+- herdr CLI는 `herdr --skill`과 각 명령 `--help`로 확인: `workspace create --label --cwd`, `pane split --direction`, `pane rename`, `agent start <이름> --kind claude|opencode --pane -- <인자>`, `pane run`
+- 에이전트 이름은 herdr 전체에서 겹치면 안 되어 `ms-` 접두어
+- 처음 실행 때 메인 패널의 Claude Code가 폴더 신뢰 확인에서 멈춤(`agent_not_ready`) → 사람이 한 번 허용. 스크립트는 멈춘 에이전트가 있어도 나머지를 띄우고 어느 패널에서 답해야 하는지 알려 주게 고침
+- OpenCode 패널은 기본 agent가 Build(코드 수정 가능)로 열림 → 이 레포 `opencode.json`에서 내장 `build`·`plan`도 `edit: deny`, `bash: ask`로 덮어씀 (`opencode debug agents`로 반영 확인)
+- `spec-kitty dashboard`는 백그라운드 서버를 띄우고 주소(http://127.0.0.1:9237)만 출력하고 끝남. 대시보드가 헌장 사전 점검 경고 "synthesized_drg missing"을 냄 → `spec-kitty charter synthesize` 실행(새 프로젝트용 최소 파일 `.kittify/doctrine/PROVENANCE.md`, `.kittify/charter/synthesis-manifest.yaml` 생성) → `charter preflight` 통과. 경고 기록 `.kittify/preflight-warning.json`은 gitignore
+- OpenCode가 DeepSeek을 쓰는 설정: 사람이 완료(Hive AI provider, `opencode auth login hive`) — 4단계 기록 참고
+- 시험: 작업 공간을 실제로 띄워 네 패널 확인 — 메인·리서치 Claude Code idle, OpenCode에 "DeepSeek V4.1 Flash Hive AI" 표시, 대시보드 주소 출력
