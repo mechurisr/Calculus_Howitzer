@@ -12,5 +12,7 @@
   "purpose_tldr": "자주포 발사각 슬라이더에 눈금과 숫자를 달아 각도를 바로 읽게 한다",
   "slug": "howitzer-angle-ticks-01M5Q3M8",
   "target_branch": "mission/howitzer-angle-ticks",
-  "topology": "coord"
+  "topology": "coord",
+  "vcs": "git",
+  "vcs_locked_at": "2026-10-24T16:10:29.452871+00:00"
 }
