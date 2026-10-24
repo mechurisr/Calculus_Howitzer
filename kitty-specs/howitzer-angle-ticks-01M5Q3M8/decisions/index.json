@@ -1,0 +1,55 @@
+{
+  "entries": [
+    {
+      "created_at": "2026-10-24T14:04:47.464863Z",
+      "decision_id": "01M5Q3MXF81EDT8FW2WGFKQC3T",
+      "final_answer": "5\u00b0 \uc791\uc740 \ub208\uae08 + 10\u00b0\ub9c8\ub2e4 \uc22b\uc790, 45\u00b0 \uac15\uc870 + \"\uc9c4\uacf5\u00b7\ud3c9\uc9c0 \ucd5c\ub300\" \uc9e7\uc740 \uc8fc\uc11d",
+      "input_key": "tick_layout",
+      "mission_id": "01M5Q3M8D3DWXT9RR4ZQGJET1P",
+      "mission_slug": "howitzer-angle-ticks-01M5Q3M8",
+      "opened_by": "cli",
+      "options": [
+        "5\u00b0 \uc791\uc740 \ub208\uae08 + 10\u00b0\ub9c8\ub2e4 \uc22b\uc790, 45\u00b0 \uac15\uc870 + \"\uc9c4\uacf5\u00b7\ud3c9\uc9c0 \ucd5c\ub300\" \uc9e7\uc740 \uc8fc\uc11d",
+        "10\u00b0\ub9c8\ub2e4 \ub208\uae08\uacfc \uc22b\uc790\ub9cc, 45\u00b0 \uac15\uc870",
+        "15\u00b0\ub9c8\ub2e4 \uc22b\uc790(15\u00b730\u00b745\u00b760\u00b775), 45\u00b0 \uac15\uc870",
+        "Other"
+      ],
+      "origin_flow": "specify",
+      "other_answer": false,
+      "question": "\ub208\uae08\uacfc \uc22b\uc790\ub97c \uc5b4\ub5bb\uac8c \uad6c\uc131\ud560\uae4c\uc694? (360px\uc5d0\uc11c \uc2ac\ub77c\uc774\ub354 \uc2e4\ud3ed \uc57d 210px)",
+      "rationale": null,
+      "resolved_at": "2026-10-24T14:05:44.488810Z",
+      "resolved_by": null,
+      "slot_key": "specify.ticks.layout",
+      "status": "resolved",
+      "step_id": null,
+      "summary_json": null
+    },
+    {
+      "created_at": "2026-10-24T15:59:01.370208Z",
+      "decision_id": "01M5QA62QT4NBKJ7NZSV80E4AP",
+      "final_answer": "\uc190\uc7a1\uc774 \ubaa8\uc591\uc744 CSS\ub85c \uc9c1\uc811 \uc9c0\uc815(\ud3ed \uace0\uc815, \ud14c\ub9c8 \uc8fc\ud669)",
+      "input_key": "thumb_alignment",
+      "mission_id": "01M5Q3M8D3DWXT9RR4ZQGJET1P",
+      "mission_slug": "howitzer-angle-ticks-01M5Q3M8",
+      "opened_by": "cli",
+      "options": [
+        "\uc190\uc7a1\uc774 \ubaa8\uc591\uc744 CSS\ub85c \uc9c1\uc811 \uc9c0\uc815(\ud3ed \uace0\uc815)",
+        "\uae30\ubcf8 \uc190\uc7a1\uc774 \uc720\uc9c0 + \ube0c\ub77c\uc6b0\uc800\ubcc4 \uc2e4\uce21 \uc2a4\ud06c\ub9b0\uc0f7\uc73c\ub85c \ud655\uc778",
+        "Other"
+      ],
+      "origin_flow": "plan",
+      "other_answer": false,
+      "question": "\ub208\uae08\uacfc \uc190\uc7a1\uc774 \uc704\uce58(\u00b12px)\ub97c \uc5b4\ub5bb\uac8c \ubcf4\uc7a5\u00b7\uce21\uc815\ud560\uae4c\uc694?",
+      "rationale": null,
+      "resolved_at": "2026-10-24T15:59:42.755318Z",
+      "resolved_by": null,
+      "slot_key": "plan.ticks.thumb-alignment",
+      "status": "resolved",
+      "step_id": null,
+      "summary_json": null
+    }
+  ],
+  "mission_id": "01M5Q3M8D3DWXT9RR4ZQGJET1P",
+  "version": 1
+}

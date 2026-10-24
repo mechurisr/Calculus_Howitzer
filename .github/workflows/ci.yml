@@ -23,8 +23,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
       # PW_CHANNEL 을 비우면 시스템 Chrome 대신 Playwright 번들 Chromium 사용 (playwright.config.ts)
       - run: pnpm test:e2e
         env:

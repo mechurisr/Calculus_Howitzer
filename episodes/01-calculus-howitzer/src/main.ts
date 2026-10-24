@@ -18,6 +18,7 @@ import { drawField } from './view/field';
 import { drawChart } from './view/chart';
 import { drawEq, drawHud } from './view/panels';
 import { showHint } from './view/hint';
+import { refreshAngleNote, renderTicks } from './view/ticks';
 
 // 재생 속도: 실제 1초에 시뮬레이션 2.6초 (보기 좋게 고른 연출값)
 const SPEED = 2.6;
@@ -34,6 +35,7 @@ window.addEventListener('resize', resize);
 
 const tut = createTutorial({
   steps: TUT, episode: 'howitzer', ctrl: $('tutCtrl'), openButton: $('tutOpen'),
+  onEnd: refreshAngleNote,
   onRender: updateFlightBtns,
   onAction: a => { if (a.dataset.act === 'seta') setAngle(+a.dataset.v!); else if (a.dataset.act === 'setc') setCharge(+a.dataset.v!); },
 });
@@ -70,7 +72,10 @@ onLangChange(() => {
   drawAll();
 });
 
+// 슬라이더 눈금: 주석 문구(data-i18n)를 applyLang 이 채우도록 먼저 만듦
+renderTicks(document.querySelector<HTMLElement>('.ang-ticks')!);
 applyLang(); updateFlightBtns(); updateStats(); resize();
+refreshAngleNote();
 startFixedStepLoop({
   dt: DT, speed: SPEED, maxFrame: 0.05,
   active: () => !!S.shot && !S.paused,

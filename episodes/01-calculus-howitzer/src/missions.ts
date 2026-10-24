@@ -8,6 +8,7 @@ import { correctedAngle } from './model/aim';
 import { exactRise, leftRiemannRise, trapezoidPiece } from './model/riemann';
 import { S, aimSetup, chargeName, clampAng, measureRate, setCharge, setMode, type Result } from './game';
 import { C } from './view/colors';
+import { markAngleNoteSeen } from './view/ticks';
 
 const chart = $('chart');
 const ang = () => +$<HTMLInputElement>('ang').value, vel = () => +$<HTMLInputElement>('vel').value;
@@ -237,7 +238,8 @@ export const TUT: TutStep[] = [
       // 다음 단계 그래프에 실험 점을 찍기 위해 저장
       angleExp=angs.map(a=>({ang:a,dist:by[a]}));
       return h;}},
-  {ch:CH4,title:P('45°는 사거리 그래프의 꼭대기','45° is the top of the range graph'),body:()=>tr(`
+  // enter: 이 단계에 들어오면 슬라이더 45° 주석을 켬 (kitty-specs/howitzer-angle-ticks-01M5Q3M8 FR-006). 문구·순서는 그대로
+  {ch:CH4,enter:()=>markAngleNoteSeen(),title:P('45°는 사거리 그래프의 꼭대기','45° is the top of the range graph'),body:()=>tr(`
     <p>가로는 발사각, 세로는 날아간 거리예요. <span class="o">주황 점</span>이 방금 실험한 결과예요.</p>
     ${rangeSvg(angleExp)}
     <p>이 그래프에도 <b>꼭대기</b>가 있죠? 3장에서 포탄의 꼭대기를 잡았을 때처럼, 꼭대기에서는 <b>기울기가 0</b>이에요.</p>

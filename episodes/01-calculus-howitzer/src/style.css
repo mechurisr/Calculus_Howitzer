@@ -5,3 +5,33 @@
 .banner{position:absolute;right:8px;top:8px;font-family:var(--display);font-size:18px;padding:4px 10px;border-radius:4px;background:var(--panel)}
 .banner.hit{color:var(--good)} .banner.miss{color:var(--bad)}
 #chart{display:block;width:100%;height:220px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+
+/* 발사각 슬라이더 눈금 (kitty-specs/howitzer-angle-ticks-01M5Q3M8). 새 모양은 모두 [data-ticks] 아래에만 둔다 —
+   이전 비교 테스트는 이 속성을 지워 원본 슬라이더 모양으로 되돌림 (research R-6) */
+.ang-track{position:relative;flex:1;min-width:0;display:flex}
+.ang-track:not([data-ticks]) .ang-ticks{display:none}
+/* 속성이 없으면 위 두 줄만 적용 — 입력이 .row 의 원래 규칙(flex:1, 기본 margin)대로 펼쳐져 원본과 같은 배치 */
+.ang-track[data-ticks]{--thumb:22px;flex-direction:column}
+/* ± 버튼(36px)이 눈금 묶음이 아니라 슬라이더(28px)와 같은 높이에 오도록: 위쪽 정렬 + 슬라이더 4px 내림 */
+.row:has(> .ang-track[data-ticks]){align-items:flex-start}
+/* 브라우저 기본 margin 2px 를 없애 상자 폭 = 입력 폭 (검토 V2: 206 vs 210px 문제) */
+.ang-track[data-ticks] #ang{display:block;flex:none;margin:4px 0 0;width:100%;height:28px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.ang-track[data-ticks] #ang::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--line)}
+.ang-track[data-ticks] #ang::-moz-range-track{height:6px;border-radius:3px;background:var(--line)}
+/* 손잡이를 직접 그려 세 엔진 모두 외곽 22px (research R-1). 테두리는 box-sizing 으로 폭 안에 포함 */
+.ang-track[data-ticks] #ang::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;box-sizing:border-box;width:var(--thumb);height:var(--thumb);margin-top:calc((6px - var(--thumb)) / 2);border-radius:50%;border:2px solid var(--panel);background:var(--accent)}
+.ang-track[data-ticks] #ang::-moz-range-thumb{box-sizing:border-box;width:var(--thumb);height:var(--thumb);border-radius:50%;border:2px solid var(--panel);background:var(--accent)}
+.ang-track[data-ticks] .ang-ticks{position:relative;pointer-events:none;user-select:none}
+.ang-track[data-ticks] .tick-row,.ang-track[data-ticks] .tick-labels,.ang-track[data-ticks] .tick-notes{position:relative}
+.ang-track[data-ticks] .tick-row{height:12px}
+.ang-track[data-ticks] .tick-labels{height:15px}
+.ang-track[data-ticks] .tick-notes{height:18px}
+.ang-track[data-ticks] .tick,.ang-track[data-ticks] .tick-label,.ang-track[data-ticks] .tick-note{position:absolute;top:0;left:calc(var(--thumb) / 2 + var(--f) * (100% - var(--thumb)));transform:translateX(-50%)}
+.ang-track[data-ticks] .tick{width:1px;background:var(--muted)}
+.ang-track[data-ticks] .tick-major{height:8px}
+.ang-track[data-ticks] .tick-minor{height:4px}
+.ang-track[data-ticks] .tick-emphasis{width:3px;height:12px;background:var(--accent)}
+.ang-track[data-ticks] .tick-label{font:11px/15px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.ang-track[data-ticks] .tick-note{font:12px/18px var(--body);color:var(--ink);white-space:nowrap}
+/* 화면 낭독기 전용 (보이지 않지만 읽힘) */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}

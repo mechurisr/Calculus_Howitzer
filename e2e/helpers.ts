@@ -6,11 +6,11 @@ export const LEGACY = pathToFileURL(resolve('e2e/legacy/howitzer.html')).href;
 export const CURRENT = '/episodes/01-calculus-howitzer/';
 
 // Math.random을 고정 시드(mulberry32)로 바꾸고 시계를 가짜로 바꿔, 두 페이지가 같은 입력에서 같은 결과를 내는지 비교할 수 있게 함
-export async function open(page: Page, url: string, o: { seed?: number; tutorial?: boolean } = {}) {
+export async function open(page: Page, url: string, o: { seed?: number; tutorial?: boolean; ticks?: boolean } = {}) {
   // 시계를 멈춰 둠: 실제 시간이 흐르면 클릭 타이밍에 따라 비행 중 정지 시점이 프레임 단위로 달라짐. 시간은 advance로만 진행
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
-  await page.addInitScript(([seed, tutorial]) => {
+  await page.addInitScript(([seed, tutorial, ticks]) => {
     let a = seed >>> 0;
     Math.random = () => {
       a = (a + 0x6d2b79f5) >>> 0; let t = a;
@@ -22,7 +22,13 @@ export async function open(page: Page, url: string, o: { seed?: number; tutorial
     window.requestAnimationFrame = cb => { queue.push(cb); return queue.length; };
     (window as unknown as { __frame: () => void }).__frame = () => { const q = queue.splice(0); q.forEach(cb => cb(performance.now())); };
     if (!tutorial) { localStorage.setItem('supojaTutDone', '1'); localStorage.setItem('series:howitzer:tutDone', '1'); }
-  }, [o.seed ?? 12345, !!o.tutorial] as const);
+    // 원본 비교는 눈금 추가 전 배치로 한다 (C-005, research R-6): 페이지 스크립트가 돌기 전에 data-ticks 를 지워
+    // 새 손잡이·눈금 줄을 끈다. 눈금 줄이 아래 내용을 41px 밀어 스크린샷·튜토리얼 스크롤 위치가 달라지기 때문. 눈금 자체는 ticks.spec.ts 가 검사
+    // ticks: true 면 눈금을 그대로 둠 (ticks.spec.ts 의 튜토리얼 4장 테스트)
+    if (!ticks) document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'interactive') document.querySelector('.ang-track')?.removeAttribute('data-ticks');
+    });
+  }, [o.seed ?? 12345, !!o.tutorial, !!o.ticks] as const);
   await page.goto(url);
   await page.evaluate(() => document.fonts.ready);
   await advance(page, 100);
@@ -71,4 +77,27 @@ export async function fireAndLand(page: Page) {
   await tap(page, '#fire');
   for (let i = 0; i < 120 && await page.locator('#fire').isDisabled(); i++) await advance(page, 500);
   await advance(page, 2000);
+}
+
+// 튜토리얼 자동 진행 (parity.spec.ts 와 ticks.spec.ts 가 같이 씀). 다음 버튼이 막혀 있으면: 퀴즈 보기 차례로 고르기 →
+// (발사 가능하면) 각도 버튼과 발사 번갈아 → '계속'이 잠겼으면 0.5초 진행 → 단계가 일시정지를 원하면 정지, 아니면 이어서 날리기.
+// onStep 이 true 를 돌려주면 그 단계에서 멈춤
+export async function walkTutorial(page: Page, onStep: (i: number, step: string) => Promise<boolean | void>) {
+  const text = async (sel: string) => (await page.locator(sel).textContent()) ?? '';
+  let quizPick = 0, c = 0;
+  for (let i = 0; i < 300 && await page.locator('#tut').isVisible(); i++) {
+    if (await onStep(i, await text('#tutStep'))) return;
+    if (await page.locator('#tutNext').isEnabled()) { await tap(page, '#tutNext'); quizPick = 0; c = 0; await advance(page, 100); continue; }
+    const quiz = page.locator('#tutBody .quiz button');
+    if (await quiz.count()) { await tap(page, '#tutBody .quiz button', quizPick++ % await quiz.count()); await advance(page, 100); continue; }
+    const acts = page.locator('#tutBody .act'), wantPause = (await text('#tutNext')).includes('일시정지');
+    const paused = (await text('#tPause')).includes('계속');
+    if (await page.locator('#tFire').isEnabled()) {
+      if (await acts.count() && c % 2 === 0) await tap(page, '#tutBody .act', (c >> 1) % await acts.count());
+      else await tap(page, '#tFire');
+      c++;
+    } else if (await page.locator('#tStep').isEnabled() && await page.locator('#tPause').isDisabled()) await tap(page, '#tStep');
+    else if (await page.locator('#tPause').isEnabled() && (paused || wantPause)) await tap(page, '#tPause');
+    await advance(page, 1200);
+  }
 }

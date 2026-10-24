@@ -6,6 +6,11 @@ export default defineConfig({
   testDir: 'e2e',
   timeout: 180_000,
   fullyParallel: true,
-  use: { baseURL: 'http://localhost:4173', ...(channel ? { channel } : {}) },
+  use: { baseURL: 'http://localhost:4173' },
+  // chromium: 모든 테스트. firefox·webkit: 눈금·모바일만, CI 에서만 (로컬 Arch 는 Playwright WebKit 미지원) — 원본 비교(수 분)는 한 엔진이면 충분
+  projects: [
+    { name: 'chromium', use: { browserName: 'chromium', ...(channel ? { channel } : {}) } },
+    ...(process.env.CI ? (['firefox', 'webkit'] as const).map(b => ({ name: b, use: { browserName: b }, testMatch: /(ticks|mobile)\.spec\.ts/ })) : []),
+  ],
   webServer: { command: 'pnpm build && pnpm preview', url: 'http://localhost:4173', reuseExistingServer: !process.env.CI },
 });
