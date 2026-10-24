@@ -2,7 +2,7 @@
 # herdr 작업 공간 한 번에 띄우기 (herdr 안의 패널에서 실행)
 #
 #   ┌──────────────────────────┬──────────────────────────┐
-#   │ 메인 세션 (Claude Code)   │ 검토 에이전트 (OpenCode)  │
+#   │ 메인 세션 (Claude Code)   │ 검토 에이전트 진행 로그    │
 #   ├──────────────────────────┼──────────────────────────┤
 #   │ 리서치 세션 (Claude Code) │ spec-kitty 대시보드       │
 #   └──────────────────────────┴──────────────────────────┘
@@ -48,7 +48,7 @@ dash=$(split "$review" down)
 
 herdr pane rename "$main" "메인 세션" >/dev/null
 herdr pane rename "$research" "리서치 세션" >/dev/null
-herdr pane rename "$review" "검토 에이전트" >/dev/null
+herdr pane rename "$review" "검토 에이전트 로그" >/dev/null
 herdr pane rename "$dash" "spec-kitty 대시보드" >/dev/null
 
 # 역할 지시문: docs/agents/README.md
@@ -64,7 +64,9 @@ start() {
 start ms-main --kind claude --pane "$main" -- -n main
 start ms-research --kind claude --pane "$research" -- -n research \
   --append-system-prompt-file docs/agents/research.md --settings docs/agents/research.settings.json
-start ms-review --kind opencode --pane "$review"
+# 검토 에이전트는 scripts/review-agent.sh 가 --standalone 으로 실행해 OpenCode 화면에 안 보이므로, 이 패널은 진행 로그를 보여 줌.
+# OpenCode 를 직접 쓰려면 이 패널에서 Ctrl+C 후 opencode 실행
+herdr pane run "$review" "scripts/review-log.sh" >/dev/null
 # 대시보드는 백그라운드 서버를 띄우고 주소를 출력한 뒤 셸로 돌아옴
 herdr pane run "$dash" "spec-kitty dashboard $OPEN" >/dev/null
 
