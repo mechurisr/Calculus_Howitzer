@@ -10,6 +10,9 @@ requirement_refs:
 planning_base_branch: mission/howitzer-angle-ticks
 merge_target_branch: mission/howitzer-angle-ticks
 branch_strategy: Planning artifacts for this mission were generated on mission/howitzer-angle-ticks. During /spec-kitty.implement this WP may branch from a dependency-specific base, but completed changes must merge back into mission/howitzer-angle-ticks unless the human explicitly redirects the landing branch.
+base_branch: kitty/mission-howitzer-angle-ticks-01M5Q3M8
+base_commit: 039c3edc1e50477621684d14039b84f5ae78ef65
+created_at: '2026-10-24T16:10:32.253138+00:00'
 subtasks:
 - T001
 - T002
