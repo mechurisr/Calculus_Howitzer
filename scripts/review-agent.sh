@@ -9,12 +9,8 @@ agent=${1:?"사용법: $0 <spec|spec-review|spec-compare|pr-check|fact-check> <�
 target=${*:?대상을 지정하세요}
 cd "$(dirname "$0")/.."
 
-# 비대화식 셸은 ~/.bashrc 를 읽지 않으므로 API 키 파일을 직접 불러옴 (키 값은 레포에 두지 않음)
-env_file=${REVIEW_ENV_FILE:-$HOME/.config/hive/env}
-[[ -r $env_file ]] && source "$env_file"
-
-# --standalone: 백그라운드 opencode 서비스가 키 없이 떠 있으면 "Authorization header missing" 이 나므로 이 셸 환경으로 서버를 따로 띄움
-run() { opencode run --standalone --agent "$1" "$2"; }
+# API 키는 OpenCode 인증 저장소에 있음 (opencode auth login hive). 레포·환경 변수에 두지 않음
+run() { opencode run --agent "$1" "$2"; }
 case $agent in
   spec)
     [[ -e $target/spec-review.md ]] && { echo "이미 $target/spec-review.md 가 있습니다 (스펙 검토는 한 번만)" >&2; exit 1; }

@@ -135,6 +135,6 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 - 리서치 세션(`acceptEdits` 모드로 시험): 편집 도구가 제공되지 않음, 역할을 "리서치"로 인식. `git commit`은 지시문 규칙 때문에 시도하지 않아 거부 규칙 자체는 미확인
 
 알게 된 점:
-- 전역 opencode 설정의 API 키는 `{env:HIVE_API_KEY}`, 값은 `~/.config/hive/env`(권한 600)에 있고 `~/.bashrc`가 불러옴. 비대화식 셸(에이전트의 Bash 도구)은 `.bashrc`를 읽지 않음
-- `opencode run`은 기본으로 백그라운드 서비스에 접속하는데, 서비스가 키 없이 떠 있으면 "Authorization header missing". `--standalone`으로 해결 → `scripts/review-agent.sh`가 둘 다 처리
+- DeepSeek 호출이 TUI에서도 "Authorization header missing"으로 실패했음. 원인: 전역 설정의 `"apiKey": "{env:HIVE_API_KEY}"`는 `~/.bashrc`가 `~/.config/hive/env`를 불러올 때만 값이 생기는데, 백그라운드 opencode 서비스와 런처로 연 TUI는 `.bashrc`를 거치지 않아 변수가 없었음 (TUI도 이 서비스에 접속)
+- 근본 해결 (2026-10-24): 사람이 `opencode auth login hive`로 키를 OpenCode 인증 저장소에 등록(`opencode auth list` → Hive AI stored) → 전역 `~/.config/opencode/opencode.json`에서 `apiKey` 줄 삭제(백업 `opencode.json.bak-20261024-212723`) → `opencode service restart`. 환경 변수 없이 기본 모드 `opencode run`으로 호출 성공 확인. `~/.config/hive/env`와 `.bashrc` 줄은 그대로 둠
 - `AGENTS.md`의 추가 절은 Spec Kitty 표시 블록(`spec-kitty:orientation`) 밖에 있음. `spec-kitty init`·`upgrade` 뒤 지워지지 않았는지 확인할 것

@@ -27,7 +27,7 @@ scripts/review-agent.sh pr-check <PR 번호>
 scripts/review-agent.sh fact-check <Issue 번호>
 ```
 
-스크립트는 `~/.config/hive/env`(또는 `REVIEW_ENV_FILE`)에서 API 키를 불러오고 `opencode run --standalone`으로 실행합니다.
-비대화식 셸은 `~/.bashrc`를 읽지 않고, 백그라운드 opencode 서비스가 키 없이 떠 있으면 "Authorization header missing"이 나기 때문입니다.
+DeepSeek API 키는 OpenCode 인증 저장소에 있습니다 (`opencode auth login hive`로 등록, `opencode auth list`로 확인).
+"Authorization header missing"이 나면 키가 저장소에 있는지 확인하고 `opencode service restart`.
 
 권한은 `opencode.json`이 강제합니다: 검토 에이전트는 코드를 고칠 수 없고, 스펙 검토는 `spec-review.md`만 쓸 수 있습니다.
