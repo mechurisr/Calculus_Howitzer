@@ -19,6 +19,14 @@
       "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
       "prompt": "{file:./docs/agents/review-spec.md}",
       "permission": {
+        "*": "deny",
+        "glob": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "execute": "allow",
+        "todowrite": "allow",
+        "question": "deny",
+        "task": "deny",
         "edit": {
           "*": "deny",
           "*kitty-specs/*/spec-review.md": "allow"
@@ -30,15 +38,13 @@
           "*.env.*": "deny"
         },
         "grep": "deny",
-        "task": "deny",
         "bash": {
           "*": "deny",
           "ls": "allow",
           "ls *": "allow",
           "date": "allow",
           "python3 -c *": "allow"
-        },
-        "webfetch": "allow"
+        }
       }
     },
     "spec-compare": {
@@ -47,6 +53,14 @@
       "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
       "prompt": "{file:./docs/agents/review-spec.md}",
       "permission": {
+        "*": "deny",
+        "glob": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "execute": "allow",
+        "todowrite": "allow",
+        "question": "deny",
+        "task": "deny",
         "edit": {
           "*": "deny",
           "*kitty-specs/*/spec-review.md": "allow"
@@ -56,15 +70,13 @@
           "*.env": "deny",
           "*.env.*": "deny"
         },
-        "task": "deny",
         "bash": {
           "*": "deny",
           "ls": "allow",
           "ls *": "allow",
           "date": "allow",
           "python3 -c *": "allow"
-        },
-        "webfetch": "allow"
+        }
       }
     },
     "pr-check": {
@@ -73,13 +85,20 @@
       "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
       "prompt": "{file:./docs/agents/review-pr.md}",
       "permission": {
+        "*": "deny",
+        "glob": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "execute": "allow",
+        "todowrite": "allow",
+        "question": "deny",
+        "task": "deny",
         "edit": "deny",
         "read": {
           "*": "allow",
           "*.env": "deny",
           "*.env.*": "deny"
         },
-        "task": "deny",
         "bash": {
           "*": "deny",
           "gh pr view *": "allow",
@@ -94,8 +113,7 @@
           "ls": "allow",
           "ls *": "allow",
           "python3 -c *": "allow"
-        },
-        "webfetch": "allow"
+        }
       }
     },
     "fact-check": {
@@ -104,20 +122,26 @@
       "model": "hive/deepseek-ai/deepseek-v4.1-flash-1017",
       "prompt": "{file:./docs/agents/review-factcheck.md}",
       "permission": {
+        "*": "deny",
+        "glob": "allow",
+        "list": "allow",
+        "webfetch": "allow",
+        "execute": "allow",
+        "todowrite": "allow",
+        "question": "deny",
+        "task": "deny",
         "edit": "deny",
         "read": {
           "*": "allow",
           "*.env": "deny",
           "*.env.*": "deny"
         },
-        "task": "deny",
         "bash": {
           "*": "deny",
           "gh issue view *": "allow",
           "gh issue comment *": "allow",
           "python3 -c *": "allow"
-        },
-        "webfetch": "allow"
+        }
       }
     }
   },

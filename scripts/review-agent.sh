@@ -14,7 +14,8 @@ cd "$(dirname "$0")/.."
 mkdir -p logs
 log="logs/review-$agent-$(echo "$target" | tr -c 'A-Za-z0-9._-' '_' | cut -c1-60)-$(date +%Y%m%d-%H%M%S).log"
 echo "로그: $log"
-run() { opencode run --agent "$1" "$2" 2>&1 | tee -a "$log"; }
+# 단계마다 20분 제한: 모델·도구가 멈추면 무한정 기다리지 않음 (REVIEW_TIMEOUT 으로 바꿀 수 있음)
+run() { timeout "${REVIEW_TIMEOUT:-20m}" opencode run --agent "$1" "$2" 2>&1 | tee -a "$log"; }
 case $agent in
   spec)
     [[ -e $target/spec-review.md ]] && { echo "이미 $target/spec-review.md 가 있습니다 (스펙 검토는 한 번만)" >&2; exit 1; }
