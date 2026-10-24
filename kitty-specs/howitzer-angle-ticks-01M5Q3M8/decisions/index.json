@@ -1,0 +1,31 @@
+{
+  "entries": [
+    {
+      "created_at": "2026-10-24T14:04:47.464863Z",
+      "decision_id": "01M5Q3MXF81EDT8FW2WGFKQC3T",
+      "final_answer": "5\u00b0 \uc791\uc740 \ub208\uae08 + 10\u00b0\ub9c8\ub2e4 \uc22b\uc790, 45\u00b0 \uac15\uc870 + \"\uc9c4\uacf5\u00b7\ud3c9\uc9c0 \ucd5c\ub300\" \uc9e7\uc740 \uc8fc\uc11d",
+      "input_key": "tick_layout",
+      "mission_id": "01M5Q3M8D3DWXT9RR4ZQGJET1P",
+      "mission_slug": "howitzer-angle-ticks-01M5Q3M8",
+      "opened_by": "cli",
+      "options": [
+        "5\u00b0 \uc791\uc740 \ub208\uae08 + 10\u00b0\ub9c8\ub2e4 \uc22b\uc790, 45\u00b0 \uac15\uc870 + \"\uc9c4\uacf5\u00b7\ud3c9\uc9c0 \ucd5c\ub300\" \uc9e7\uc740 \uc8fc\uc11d",
+        "10\u00b0\ub9c8\ub2e4 \ub208\uae08\uacfc \uc22b\uc790\ub9cc, 45\u00b0 \uac15\uc870",
+        "15\u00b0\ub9c8\ub2e4 \uc22b\uc790(15\u00b730\u00b745\u00b760\u00b775), 45\u00b0 \uac15\uc870",
+        "Other"
+      ],
+      "origin_flow": "specify",
+      "other_answer": false,
+      "question": "\ub208\uae08\uacfc \uc22b\uc790\ub97c \uc5b4\ub5bb\uac8c \uad6c\uc131\ud560\uae4c\uc694? (360px\uc5d0\uc11c \uc2ac\ub77c\uc774\ub354 \uc2e4\ud3ed \uc57d 210px)",
+      "rationale": null,
+      "resolved_at": "2026-10-24T14:05:44.488810Z",
+      "resolved_by": null,
+      "slot_key": "specify.ticks.layout",
+      "status": "resolved",
+      "step_id": null,
+      "summary_json": null
+    }
+  ],
+  "mission_id": "01M5Q3M8D3DWXT9RR4ZQGJET1P",
+  "version": 1
+}

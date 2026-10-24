@@ -10,7 +10,11 @@ target=${*:?대상을 지정하세요}
 cd "$(dirname "$0")/.."
 
 # API 키는 OpenCode 인증 저장소에 있음 (opencode auth login hive). 레포·환경 변수에 두지 않음
-run() { opencode run --agent "$1" "$2"; }
+# 진행을 화면에 바로 흘리면서 logs/ 에도 남김 — 다른 터미널에서 tail -f logs/review-*.log 로 볼 수 있음
+mkdir -p logs
+log="logs/review-$agent-$(echo "$target" | tr -c 'A-Za-z0-9._-' '_' | cut -c1-60)-$(date +%Y%m%d-%H%M%S).log"
+echo "로그: $log"
+run() { opencode run --agent "$1" "$2" 2>&1 | tee -a "$log"; }
 case $agent in
   spec)
     [[ -e $target/spec-review.md ]] && { echo "이미 $target/spec-review.md 가 있습니다 (스펙 검토는 한 번만)" >&2; exit 1; }

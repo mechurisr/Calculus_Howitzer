@@ -49,3 +49,6 @@ kitty-ops/ops-index.jsonl
 
 # Spec Kitty 런타임 경고 기록 (대시보드 등 실행 때마다 다시 생김)
 .kittify/preflight-warning.json
+
+# 검토 에이전트 실행 로그 (scripts/review-agent.sh)
+logs/
