@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>미적분 자주포</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script type="module" src="./src/main.ts"></script>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <button class="lang-btn" id="langBtn" type="button"></button>
+    <h1 data-i18n="title"></h1>
+    <p data-i18n="lead"></p>
+    <button class="tut-btn" id="tutOpen" data-i18n="tutOpen"></button>
+  </header>
+
+  <div class="field">
+    <canvas id="field" data-i18n-aria="aField"></canvas>
+    <div class="hud" id="hud"></div>
+    <div class="banner" id="banner" hidden></div>
+  </div>
+
+  <section class="panel" data-i18n-aria="aPanel">
+    <div class="mode" role="group" data-i18n-aria="aEnv">
+      <button id="mVac" aria-pressed="true" data-i18n="mVac"></button>
+      <button id="mAir" aria-pressed="false" data-i18n="mAir"></button>
+    </div>
+    <div class="ctl">
+      <div class="ctl-head"><label for="ang" data-i18n="angL"></label><span class="val" id="angV"></span></div>
+      <div class="row"><button class="nudge" data-t="ang" data-d="-0.5" data-i18n-aria="aAngDown">−</button><input type="range" id="ang" min="10" max="80" step="0.5" value="45"><button class="nudge" data-t="ang" data-d="0.5" data-i18n-aria="aAngUp">+</button></div>
+    </div>
+    <div class="ctl">
+      <div class="ctl-head"><span id="chgL" style="font-weight:500" data-i18n="chgL"></span><span class="val" id="velV"></span></div>
+      <div class="mode" id="charges" role="group" aria-labelledby="chgL">
+        <button data-v="60" aria-pressed="false"></button><button data-v="75" aria-pressed="true"></button><button data-v="93" aria-pressed="false"></button><button data-v="115" aria-pressed="false"></button>
+      </div>
+      <input type="hidden" id="vel" value="75">
+    </div>
+    <div class="actions">
+      <button class="btn-primary" id="fire" data-i18n="fire"></button>
+      <button class="btn-sec" id="pauseBtn" hidden></button>
+      <button class="btn-sec" id="stepBtn" hidden data-i18n="step05"></button>
+      <button class="btn-sec" id="hintBtn" data-i18n="hintBtn"></button>
+      <button class="btn-sec" id="newT" data-i18n="newT"></button>
+    </div>
+    <div class="stats"><span><span data-i18n="sDistL"></span> <b id="sDist"></b></span><span><span data-i18n="sDhL"></span> <b id="sDh"></b></span><span><span data-i18n="sWindL"></span> <b id="sWind"></b></span><span><span data-i18n="sScoreL"></span> <b id="sScore">0 / 0</b></span></div>
+    <div class="log" id="log" aria-live="polite" hidden></div>
+    <div class="hint" id="hint" hidden></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2 data-i18n="eqH"></h2>
+    <div class="eq" id="eq"></div>
+    <p class="small" data-i18n="eqNote"></p>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2 data-i18n="chartH"></h2>
+    <canvas id="chart" data-i18n-aria="aChart"></canvas>
+    <p class="small" data-i18n="chartNote"></p>
+  </section>
+
+  <section class="notes">
+    <h2 data-i18n="notesH"></h2>
+    <p data-i18n="n1"></p>
+    <p data-i18n="n2"></p>
+    <p data-i18n="n3"></p>
+  </section>
+</div>
+
+<!-- 튜토리얼 카드 안에 들어갈 조작 버튼 (엔진이 카드 안으로 옮김) -->
+<div class="tut-ctrl" id="tutCtrl" hidden>
+  <button class="btn-primary" id="tFire" data-i18n="fire"></button>
+  <button class="btn-sec" id="tPause"></button>
+  <button class="btn-sec" id="tStep" data-i18n="step05"></button>
+</div>
+</body>
+</html>

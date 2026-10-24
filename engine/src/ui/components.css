@@ -1,0 +1,49 @@
+/* 공통 레이아웃: 한 줄 세로 배치 (시뮬레이션 화면 → 조작 패널 → 해설) */
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:grid;gap:18px}
+header{position:relative}
+header h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,8vw,46px);line-height:1.05;margin:0;letter-spacing:.01em;text-wrap:balance}
+header h1{padding-right:96px}
+header h1 span{color:var(--accent)}
+header p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;gap:14px}
+/* 조작: 라벨+값 머리줄, 슬라이더와 ± 미세조정 버튼 */
+.ctl{display:grid;gap:6px}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label{font-weight:500}
+.val{font-family:var(--mono);font-size:18px;font-variant-numeric:tabular-nums}
+.row{display:flex;align-items:center;gap:8px}
+.row input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
+.nudge{width:36px;height:36px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:4px;font-family:var(--mono);font-size:16px;cursor:pointer}
+/* 세그먼트 버튼 (aria-pressed로 선택 표시) */
+.mode{display:flex;gap:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.mode button{flex:1;padding:9px 6px;border:0;background:var(--bg);color:var(--muted);font:inherit;font-weight:500;cursor:pointer}
+.mode button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-primary{flex:2;min-width:140px;padding:13px;border:0;border-radius:4px;background:var(--accent);color:#fff;font-family:var(--display);font-size:20px;letter-spacing:.06em;cursor:pointer}
+.btn-primary:disabled{opacity:.5;cursor:default}
+.btn-sec{flex:1;min-width:110px;padding:12px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit;font-weight:500;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stats{display:flex;gap:16px;font-family:var(--mono);font-size:13px;color:var(--muted);flex-wrap:wrap}
+.stats b{color:var(--ink);font-weight:500}
+.hint{font-family:var(--mono);font-size:12.5px;background:var(--bg);border-left:3px solid var(--blue);padding:10px 12px;border-radius:0 4px 4px 0;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+.log{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px;display:grid;gap:2px}
+.log b{font-weight:500}
+.log-h{font-family:var(--body);font-size:12px;color:var(--muted);margin-bottom:2px}
+/* (i) 해설 팝업 — ui/tooltip.ts */
+.info{width:18px;height:18px;margin-left:6px;padding:0;border:1.5px solid var(--blue);border-radius:50%;background:var(--panel);color:var(--blue);font:700 11px/1 var(--body);font-style:italic;cursor:help;vertical-align:1px}
+.tip{position:fixed;z-index:1100;display:grid;gap:7px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:6px;padding:10px 12px;font:13px/1.55 var(--body);white-space:normal;word-break:keep-all;box-shadow:0 8px 28px rgba(0,0,0,.28)}
+.tip .tp{display:block}
+.tip .ta,.tip .tb{font-family:var(--mono);font-weight:500;padding:0 3px;border-radius:3px;margin-right:2px}
+.tip .ta{color:var(--blue);background:color-mix(in srgb,var(--blue) 12%,transparent)}
+.tip .tb{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0}
+/* 실시간 수식 상자: .c 주석, .a 주황, .b 파랑 */
+.eq{font-family:var(--mono);font-size:12.5px;line-height:1.75;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;overflow-x:auto;white-space:pre;font-variant-numeric:tabular-nums}
+.eq .c{color:var(--muted)} .eq .a{color:var(--accent)} .eq .b{color:var(--blue)}
+.notes{display:grid;gap:10px;max-width:65ch}
+.notes p{margin:0}
+.notes strong{color:var(--accent);font-weight:700}
+.small{font-size:13px;color:var(--muted)}
+/* 언어 토글: 튜토리얼이 화면을 어둡게 해도 누를 수 있게 dim(999)·카드(1001)보다 위 */
+.lang-btn{position:absolute;top:0;right:0;z-index:1002;padding:6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);font:500 13px/1.2 var(--body);cursor:pointer}
+.tut-btn{margin-top:10px;padding:8px 12px;border:1px solid var(--accent);border-radius:4px;background:transparent;color:var(--accent);font:inherit;font-weight:700;cursor:pointer}

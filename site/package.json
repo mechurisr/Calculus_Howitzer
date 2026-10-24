@@ -1,0 +1,8 @@
+{
+  "name": "@series/site",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@series/engine": "workspace:*"
+  }
+}

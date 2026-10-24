@@ -1,1 +1,10 @@
 .DS_Store
+node_modules/
+dist/
+test-results/
+playwright-report/
+*.tsbuildinfo
+# 비밀값: 절대 커밋 금지
+.env
+.env.*
+!.env.example

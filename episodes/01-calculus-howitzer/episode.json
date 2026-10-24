@@ -1,0 +1,14 @@
+{
+  "id": "howitzer",
+  "number": 1,
+  "slug": "01-calculus-howitzer",
+  "status": "published",
+  "title": { "ko": "미적분 자주포", "en": "Calculus Howitzer" },
+  "role": { "ko": "자주포 포수", "en": "Howitzer gunner" },
+  "summary": {
+    "ko": "장약과 발사각으로 깃발을 맞히며 미분(접선·변화율)과 적분(Δt 조각 쌓기·그래프 아래 넓이)을 손으로 익힙니다.",
+    "en": "Hit the flag with charge and angle while learning derivatives (tangents, rates) and integrals (stacking Δt pieces, area under a graph) by hand."
+  },
+  "concepts": ["미분", "적분", "수치적분(오일러)", "극값", "할선 기울기"],
+  "difficulty": 2
+}
