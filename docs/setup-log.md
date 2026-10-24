@@ -68,3 +68,44 @@ scripts/check-boundaries.mjs     의존 규칙 검사
 - 권장 터치 크기 44×44 px보다 작은 조작 요소: 언어 버튼(65×30), ± 버튼(36×36), 각도 슬라이더 높이(28), 장약·모드 버튼 높이(41). 이전 검증을 위해 그대로 둠 → 헌장의 모바일 규칙이 정해지면 고칠 항목
 - 브라우저가 자동으로 요청하는 `favicon.ico`가 404 (원본도 같음)
 - CI(GitHub Actions)에서 `pnpm check`와 e2e 돌리기 → 5단계에서 배포와 함께 설정
+
+## 3단계: Spec Kitty 세팅 (2026-10-24)
+
+### 설치
+
+- `sudo pacman -S --needed python-pipx` (사람이 별도 터미널에서 실행. 지문·비밀번호 인증이 필요해 에이전트 세션에서는 불가)
+- `pipx install spec-kitty-cli==3.2.7` → `~/.local/share/pipx/venvs/spec-kitty-cli`, 실행 파일 `~/.local/bin/spec-kitty`
+- `spec-kitty upgrade --agent-check --json` → `none` (3.2.7 고정)
+
+### 초기화: `spec-kitty init --ai claude,opencode --non-interactive`
+
+- init은 이미 초기화된 폴더에서 다시 실행하면 아무것도 하지 않음 → 두 번 나눠 실행하지 않고 쉼표로 한 번에 지정
+- 레포에 생긴 것(커밋함): `.kittify/`(config, metadata, charter), `AGENTS.md`(OpenCode가 읽는 안내), `.claudeignore`, `.gitattributes`(kitty-specs 이벤트 로그 머지 드라이버), `.gitignore` 추가분
+- 레포에 생겼지만 **gitignore 대상**(커밋 안 됨): `.claude/`(CLAUDE.md, settings.json 훅, agents, skills 81개), `.agents/skills/`(OpenCode용 스킬 81개). 새로 clone하면 `spec-kitty init --ai claude,opencode --non-interactive`를 다시 실행해야 함
+  - `.claude/settings.json`에 훅이 추가됨: SessionStart → `spec-kitty session-start`, Stop → `spec-kitty session-stop`
+  - 4단계 역할 지시문은 `.claude/`가 아닌 커밋되는 위치에 둬야 함
+- `verify-setup` 통과 (Managed Skills 162개 정상)
+
+### ⚠ 전역 설치 (예상하지 못한 동작)
+
+spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포함) 지원하는 모든 에이전트의 사용자 전역 폴더에 슬래시 명령·스킬을 설치하고, 없거나 버전이 다르면 다시 만든다 (`specify_cli/__init__.py` main_callback → `ensure_global_agent_commands()` / `ensure_global_agent_skills()`, ADR 2026-04-07-1). 끄는 옵션·환경 변수는 없음. 첫 실행(21:05:31) 때 생긴 것:
+
+- 새 폴더: `~/.kittify/`, `~/.spec-kitty/`, `~/.qwen/`, `~/.kilocode/`, `~/.gemini/`, `~/.github/prompts/`, `~/.cursor/commands/`, `~/.windsurf/`, `~/.augment/`, `~/.amazonq/`, `~/.kiro/`, `~/.agent/`, `~/.claude/commands/`, `~/.config/opencode/commands/`
+- 기존 폴더에 추가: `~/.claude/skills/`(spec-kitty 스킬 56개), `~/.agents/skills/`
+- 영향: 다른 프로젝트의 Claude Code 세션에도 `/spec-kitty.*` 명령과 spec-kitty 스킬이 보임
+
+### 헌장
+
+`/spec-kitty.charter` 절차(대화 인터뷰 → `answers.yaml` → `charter generate`)로 작성.
+
+- 인터뷰 결정: 모바일 = 360px 폭 + 터치 대상 44px, 머지 조건 = CI 통과 + 검토 에이전트 크로스체크에 미해결 [치명적] 없음(GitHub 승인 수 요구 없음), 커밋 = Conventional Commits, 문구 = 한국어·영어 필수
+- `.kittify/charter/charter.yaml`: 정책의 기준. `governance`(테스트·품질·커밋·브랜치 규칙)와 프로젝트 규칙 `PRJ-001`~`PRJ-010`을 직접 작성. 기본 제공 규칙 8개(DIRECTIVE_001, 010, 024, 030, 033, 045, 046, 050)와 패러다임 2개(specification-by-example, trunk-based) 선택
+- `.kittify/charter/charter.md`: 사람이 읽는 요약. `## Policy Summary` 항목 8개가 각 단계 첫 로드 때 프롬프트에 들어감(확인함)
+- 알게 된 점: `charter generate`는 `governance`·`directives`를 채우지 않음(직접 작성해야 함). 3.2.7 스키마는 `directives: {directives: [...]}` 형태이고 `applies_to` 필드가 없음 — 스킬 문서의 예시(리스트 + applies_to)대로 쓰면 로드에 실패해 규칙이 조용히 빠짐. 적용 단계는 설명 문장 안에 적음
+- `charter lint`: 2건(MEDIUM) — 선택하지 않은 기본 규칙 DIRECTIVE_035·039의 카탈로그 연결 문제로, 이 프로젝트와 무관
+
+### 에피소드 스펙 템플릿
+
+- `.kittify/overrides/missions/software-dev/templates/spec-template.md` (resolver가 OVERRIDE 계층으로 선택하는 것 확인)
+- 기본 템플릿 앞에 "Episode Design" 필수 섹션 추가: 역할 설정, 수학 개념, 학습 목표(3개 이내), 핵심 인터랙션, 단계별 미션, 정답·검증(→ answers.md), 참고 자료, 난이도
+- 기존 에피소드를 고치는 작은 미션은 바뀌는 항목만 쓰고 나머지는 "N/A — 이유"
