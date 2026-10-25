@@ -6,7 +6,9 @@ herdr 안의 아무 패널에서 `scripts/workspace.sh`를 실행하면 아래 �
 
 ```
 ┌──────────────────────────┬──────────────────────────┐
-│ 메인 세션 (ms-main)       │ 검토 에이전트 (ms-review) │
+│                          │ 검토 진행 상태 (막대)      │
+│ 메인 세션 (ms-main)       ├──────────────────────────┤
+│                          │ 검토 에이전트 진행 로그    │
 ├──────────────────────────┼──────────────────────────┤
 │ 리서치 세션 (ms-research) │ spec-kitty 대시보드       │
 └──────────────────────────┴──────────────────────────┘
@@ -15,7 +17,8 @@ herdr 안의 아무 패널에서 `scripts/workspace.sh`를 실행하면 아래 �
 - `scripts/workspace.sh --open`: 대시보드를 브라우저로도 열기 · `--close`: 작업 공간 닫기(에이전트 종료)
 - 이미 떠 있으면 새로 만들지 않고 그 작업 공간으로 이동
 - 다른 패널에서 에이전트에게 일을 시킬 때: `herdr agent prompt ms-main "..." --wait`
-- 검토 에이전트 패널은 처음에 OpenCode 기본 agent(Build)로 열림. `/spec-review`, `/pr-check`, `/fact-check` 명령을 쓰거나 Tab으로 agent를 고름. 이 레포에서는 Build·Plan도 파일 수정이 막혀 있음(`opencode.json`)
+- 검토 칸 위쪽은 진행 막대(`scripts/review-status.sh --watch`: 단계·경과/제한·도구 호출·멈춤 의심·결과물), 아래쪽은 진행 로그(`scripts/review-log.sh`). 검토는 `scripts/review-agent.sh`가 `--standalone`으로 돌려 OpenCode 화면에는 안 보임
+- OpenCode를 직접 쓰려면 로그 패널에서 Ctrl+C 후 `opencode` 실행. 기본 agent(Build)로 열리고 `/spec-review`, `/pr-check`, `/fact-check` 명령이나 Tab으로 agent를 고름. 이 레포에서는 Build·Plan도 파일 수정이 막혀 있음(`opencode.json`)
 
 
 작업은 Issue마다 **정식 경로**(스펙 검토 → 계획 → 구현 → 크로스체크)나 **가벼운 경로**(라벨 `light`: 짧은 스펙 → 구현 → 크로스체크)로 진행합니다. 경로는 채택할 때 사람이 정합니다 ([main.md](main.md) "경로").
