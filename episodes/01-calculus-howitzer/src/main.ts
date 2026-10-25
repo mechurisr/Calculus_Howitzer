@@ -34,10 +34,11 @@ onThemeChange(() => { refreshColors(); drawAll(); });
 window.addEventListener('resize', resize);
 
 // 튜토리얼 15단계 각도 버튼을 누르면 카드가 다시 그려져 초점이 사라짐 → 누른 버튼에 되돌림 (kitty-specs/howitzer-tutorial-angle-buttons-01M5RDY7 research R-4)
-// 각도 버튼 클릭은 다시 그리기가 두 번이라(input → emit('angle'), 클릭 처리) 값을 지우지 않고, 초점이 사라졌을 때만 되돌림 — 사용자가 옮긴 초점은 그대로
+// 그 클릭이 일으킨 다시 그리기(input → emit('angle'), 이어서 클릭 처리 — 둘 다 같은 이벤트 안에서 동기로 일어남)에서만 되돌리고
+// 이벤트가 끝나면 지움. 나중의 다시 그리기(착탄, 언어 전환)가 사용자가 옮긴 초점을 빼앗지 않게 (PR #11 크로스체크)
 let focusAng: string | undefined;
 function restoreAngFocus() {
-  if (!focusAng || (document.activeElement && document.activeElement !== document.body)) return;
+  if (!focusAng) return;
   const b = document.querySelector<HTMLButtonElement>(`#tutBody .exp-angs [data-v="${focusAng}"]`);
   if (b && !b.disabled) b.focus({ preventScroll: true });
 }
@@ -46,7 +47,10 @@ const tut = createTutorial({
   onEnd: refreshAngleNote,
   onRender: () => { updateFlightBtns(); restoreAngFocus(); },
   onAction: a => {
-    if (a.dataset.act === 'seta') { focusAng = a.closest('.exp-angs') ? a.dataset.v : undefined; setAngle(+a.dataset.v!); }
+    if (a.dataset.act === 'seta') {
+      if (a.closest('.exp-angs')) { focusAng = a.dataset.v; queueMicrotask(() => { focusAng = undefined; }); }
+      setAngle(+a.dataset.v!);
+    }
     else if (a.dataset.act === 'setc') setCharge(+a.dataset.v!);
   },
 });
