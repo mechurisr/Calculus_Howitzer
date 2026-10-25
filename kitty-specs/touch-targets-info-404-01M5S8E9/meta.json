@@ -1,0 +1,16 @@
+{
+  "coordination_branch": "kitty/mission-touch-targets-info-404-01M5S8E9",
+  "created_at": "2026-10-25T10:07:02.039443+00:00",
+  "flattened": false,
+  "friendly_name": "해설 버튼·404 링크 터치 크기",
+  "mission_id": "01M5S8E9BYQ32EKNFXWEXY38W5",
+  "mission_number": null,
+  "mission_slug": "touch-targets-info-404-01M5S8E9",
+  "mission_type": "software-dev",
+  "pr_bound": true,
+  "purpose_context": "헌장 PRJ-004의 44×44 CSS px에 못 미치고 승인 예외에도 없는 남은 두 조작 요소: 힌트 상자의 해설 (i) 버튼(18×18, Issue #13)과 404 페이지의 에피소드 목록 링크(.tut-btn이 <a>라 최소 크기 미적용, Issue #15). 계산·학습 흐름과 무관해 가벼운 경로(light)로 한 미션에 묶는다.",
+  "purpose_tldr": "힌트 해설 (i) 버튼과 404 페이지 링크를 터치 기준 44px로 맞춘다 (가벼운 경로)",
+  "slug": "touch-targets-info-404-01M5S8E9",
+  "target_branch": "mission/touch-targets-info-404",
+  "topology": "coord"
+}
