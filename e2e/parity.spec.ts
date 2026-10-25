@@ -1,7 +1,7 @@
 // 엔진 이전 회귀 검사: 기존 단일 파일(e2e/legacy/howitzer.html)과 새 빌드를 같은 시드·같은 조작으로 돌려
 // 문구, 버튼 상태, 캔버스 픽셀이 모두 같은지 비교
 import { expect, test, type Page } from '@playwright/test';
-import { CURRENT, LEGACY, advance, fireAndLand, maskExperimentStep, open, setAngle, snapshot, tap, walkTutorial } from './helpers';
+import { CURRENT, LEGACY, advance, fireAndLand, legacyStep5, maskExperimentStep, open, setAngle, snapshot, tap, walkTutorial } from './helpers';
 
 // 프레임을 한 장씩 돌려 느림 (한 테스트에 수 분)
 test.describe.configure({ timeout: 900_000 });
@@ -75,6 +75,20 @@ test('tutorial walkthrough matches legacy', async ({ browser }) => {
   }
   // 정규식이 맞지 않아 아무것도 가리지 못한 채 비교하는 일을 막음 (양쪽 모두에서 가려져야 함)
   expect(masked).toBeGreaterThanOrEqual(2);
+  // 5단계(손으로 쌓아 보기)는 가리지 않고, 원본에 문장 치환·순서 재배치를 적용해 글자까지 비교
+  // (kitty-specs/howitzer-tutorial-step5-text-01M5S15W NFR-001). 라벨 끝이 정확히 "· 5 / 22" 인 것만 — "15 / 22" 와 섞이지 않게
+  let replaced = 0, reordered = 0;
+  for (const [label, snap] of legacy) {
+    if (!/ · 5 \/ 22$/.test(label)) continue;
+    for (const id of ['tutBody', 'tut'] as const) {
+      const el = snap.els[id]; if (!el) continue;
+      const r = legacyStep5(el[0] as string);
+      if (id === 'tutBody') { replaced += +r.replaced; reordered += +r.reordered; }
+      el[0] = r.html;
+    }
+  }
+  expect(replaced, '5단계 발사 전 문장 치환이 적용됨').toBeGreaterThanOrEqual(1);
+  expect(reordered, '5단계 표 설명 재배치가 적용됨').toBeGreaterThanOrEqual(1);
   compare(legacy, current);
 });
 
