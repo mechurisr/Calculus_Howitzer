@@ -49,19 +49,28 @@ test('버튼 상태·비활성·갱신 경로·초점·관찰 문장·언어 (US
   expect(await states(page)).not.toContain('current');
   await tap(page, '.nudge[data-t="ang"][data-d="-0.5"]');
   expect((await states(page))[3]).toBe('current');
-  await page.locator('#ang').focus(); await page.keyboard.press('ArrowRight');
+  expect(await scroll()).toEqual(before);
+  // 키보드: 슬라이더에 초점만 줌. locator.focus() 는 슬라이더가 화면 밖이면 페이지를 스크롤해서(CI 번들 Chromium 배치에서 발생)
+  // 갱신이 스크롤을 일으키는지와 섞이므로 preventScroll 로 주고, 기준 위치도 초점 뒤에 다시 잼
+  await page.locator('#ang').evaluate((e: HTMLElement) => e.focus({ preventScroll: true }));
+  const beforeKeys = await scroll();
+  await page.keyboard.press('ArrowRight');
   expect(await angleValue(page)).toBe(50.5);
   expect(await states(page)).not.toContain('current');
   await page.keyboard.press('ArrowLeft');
   expect((await states(page))[3]).toBe('current');
   await setAngle(page, 50.5);
   expect(await states(page)).not.toContain('current');
-  expect(await scroll()).toEqual(before);
+  expect(await scroll()).toEqual(beforeKeys);
 
   // research R-4: 키보드로 각도 버튼을 누르면 다시 그려진 뒤에도 초점이 그 버튼에
   await btn(page, 40).focus(); await page.keyboard.press('Enter'); await advance(page, 50);
   expect(await angleValue(page)).toBe(40);
   expect(await page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset?.v)).toBe('40');
+  // 학습자가 초점을 버린 뒤(카드 글자 영역 클릭 = body 로) 다른 이유의 다시 그리기가 초점을 되돌리지 않음 (PR #11 크로스체크)
+  await page.evaluate(() => (document.activeElement as HTMLElement).blur());
+  await setAngle(page, 50); await advance(page, 50); await setAngle(page, 40); await advance(page, 50);
+  expect(await page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset?.v)).toBeUndefined();
 
   // FR-007: 30·40·45·50 → 60°를 말하지 않는 문장, 60까지 쏘면 원래 문장
   await tutFire(page); await shoot(page, 45); await shoot(page, 50);
@@ -105,7 +114,8 @@ const boxes = (page: Page) => page.locator(BTN).evaluateAll(es => es.map(e => {
 function expectRow(bs: Box[]) {
   expect(bs).toHaveLength(5);
   for (const b of bs) { expect(b.w).toBeGreaterThanOrEqual(44); expect(b.h).toBeGreaterThanOrEqual(44); expect(Math.abs(b.y - bs[0].y)).toBeLessThan(0.5); }
-  for (let i = 1; i < 5; i++) expect(bs[i].x - (bs[i - 1].x + bs[i - 1].w)).toBeGreaterThanOrEqual(7.5);
+  // 간격 8px (NFR-001). 0.01px 는 소수점 픽셀 반올림 여유
+  for (let i = 1; i < 5; i++) expect(bs[i].x - (bs[i - 1].x + bs[i - 1].w)).toBeGreaterThanOrEqual(8 - 0.01);
 }
 // WCAG 상대휘도 대비 (sRGB 선형화)
 const contrast = (page: Page, sel: string) => page.locator(sel).evaluate(e => {
@@ -124,12 +134,12 @@ test('360px: 한 줄·44px·간격 8px·가로 스크롤 없음, 내용 폭 287p
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
   expect(await page.locator('#tut').evaluate(e => e.scrollWidth <= e.clientWidth)).toBe(true);
 
-  // answers.md V1: 클래식 스크롤바면 내용 폭 287px. 실행 환경과 상관없이 그 폭을 만들어 한 줄 확인 (analysis C1)
-  await page.addStyleTag({ content: '#tut{width:321px!important;overflow-y:scroll}' });
-  const inner = await page.locator('#tutBody').evaluate(e => e.clientWidth);
-  expect(inner).toBeLessThanOrEqual(302);
+  // answers.md V1: 클래식 스크롤바면 내용 폭 287px. 스크롤바 종류와 상관없이 그 폭을 만들어 한 줄 확인 (analysis C1)
+  // 카드 321px − 테두리 2 − 안쪽 여백 32 = 287px, 스크롤바는 숨겨 폭을 먹지 않게
+  await page.addStyleTag({ content: '#tut{width:321px!important;overflow-y:hidden!important}' });
+  expect(await page.locator('#tutBody').evaluate(e => e.clientWidth)).toBe(287);
   expectRow(await boxes(page));
-  await page.addStyleTag({ content: '#tut{width:min(560px,calc(100% - 24px))!important;overflow-y:auto}' });
+  await page.addStyleTag({ content: '#tut{width:min(560px,calc(100% - 24px))!important;overflow-y:auto!important}' });
 
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme }); await advance(page, 50);
