@@ -5,7 +5,7 @@
 
 ## V1. 지금 `.act` 버튼 높이
 
-- Answer: **41.25 px**, 44 px에 **2.75 px** 모자람
+- Answer: **41.25 px**, 44 px에 **2.75 px** 모자람 (`.tut-btn`도 여백·테두리·글자가 같아 41.25 px — 360px 실측 218 × 41)
 - Derivation:
   - 줄 높이 = 15 px × 1.55 = 23.25 px (`engine/src/ui/theme.css` `body{font-size:15px;line-height:1.55}`, `.act`는 `font:inherit`)
   - 안쪽 여백 위아래 8 + 8 = 16 px, 테두리 위아래 1 + 1 = 2 px (`.tut-body .act{padding:8px 12px;border:1px solid …}`)
@@ -21,3 +21,4 @@
 | 본문 글자 크기·줄 높이 | 15, 1.55 | px, 배수 | `engine/src/ui/theme.css` | verified |
 | `.act` 안쪽 여백·테두리 | 8 / 12, 1 | px | `engine/src/tutorial/tutorial.css` | verified |
 | 지금 `.act` 높이 | 41.25 | px | 위 계산 + 360px 실측 | verified |
+| 지금 `.tut-btn` 높이 | 41.25 | px | `engine/src/ui/components.css` 같은 계산, `e2e/mobile.spec.ts` 보고 218 × 41 | verified |
