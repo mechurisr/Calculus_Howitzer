@@ -1,7 +1,7 @@
 // 엔진 이전 회귀 검사: 기존 단일 파일(e2e/legacy/howitzer.html)과 새 빌드를 같은 시드·같은 조작으로 돌려
 // 문구, 버튼 상태, 캔버스 픽셀이 모두 같은지 비교
 import { expect, test, type Page } from '@playwright/test';
-import { CURRENT, LEGACY, advance, fireAndLand, open, setAngle, snapshot, tap, walkTutorial } from './helpers';
+import { CURRENT, LEGACY, advance, fireAndLand, maskExperimentStep, open, setAngle, snapshot, tap, walkTutorial } from './helpers';
 
 // 프레임을 한 장씩 돌려 느림 (한 테스트에 수 분)
 test.describe.configure({ timeout: 900_000 });
@@ -60,6 +60,21 @@ test('tutorial walkthrough matches legacy', async ({ browser }) => {
   const run = async (url: string) => { const ctx = await browser.newContext({ reducedMotion: 'reduce' }); const p = await ctx.newPage(); await open(p, url, { tutorial: true }); const r = await tutorialWalk(p); await ctx.close(); return r; };
   const [legacy, current] = await Promise.all([run(LEGACY), run(CURRENT)]);
   expect(legacy.at(-2)?.[0]).toContain('22 / 22');
+  // 15단계(실험: 각도만 바꿔 보기)는 각도 버튼 상태와 관찰 문장만 의도적으로 달라짐 → 양쪽 모두 그 두 덩어리만 가리고 비교
+  // (kitty-specs/howitzer-tutorial-angle-buttons-01M5RDY7 spec C-003). 설명·결과 표·다른 요소는 그대로 비교
+  let masked = 0;
+  for (const run of [legacy, current]) for (const [label, snap] of run) {
+    if (!label.includes('15 / 22')) continue;
+    // 카드 본문(tutBody)과, 본문을 품은 카드 전체(tut) 둘 다
+    for (const id of ['tutBody', 'tut'] as const) {
+      const el = snap.els[id]; if (!el) continue;
+      const m = maskExperimentStep(el[0] as string);
+      if (id === 'tutBody' && m.includes('[angle-buttons]')) masked++;
+      el[0] = m;
+    }
+  }
+  // 정규식이 맞지 않아 아무것도 가리지 못한 채 비교하는 일을 막음 (양쪽 모두에서 가려져야 함)
+  expect(masked).toBeGreaterThanOrEqual(2);
   compare(legacy, current);
 });
 

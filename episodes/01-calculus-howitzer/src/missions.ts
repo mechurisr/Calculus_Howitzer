@@ -6,7 +6,8 @@ import { CHARGES, G, GUN_X } from './model/constants';
 import { rangeSlopePerDeg, rangeVacuum } from './model/ballistics';
 import { correctedAngle } from './model/aim';
 import { exactRise, leftRiemannRise, trapezoidPiece } from './model/riemann';
-import { S, aimSetup, chargeName, clampAng, measureRate, setCharge, setMode, type Result } from './game';
+import { EXP_ANGLES, angleButtonState, observationKind, type ObservationKind } from './model/angle-buttons';
+import { S, aimSetup, angle, chargeName, clampAng, measureRate, setCharge, setMode, type Result } from './game';
 import { C } from './view/colors';
 import { markAngleNoteSeen } from './view/ticks';
 
@@ -29,6 +30,27 @@ function stepTable(s: StepState) {
 let stepRec0: StepRec | null = null;
 // "실험: 각도만 바꿔 보기"의 결과 {ang, dist}. 다음 단계의 사거리 그래프에 점으로 찍음
 let angleExp: { ang: number; dist: number }[] = [];
+// 실험 단계 각도 버튼 5개: 지금 슬라이더 각도면 '현재'(aria-pressed), 이미 기록된 각도면 '쏜 각도'(비활성 + 이유를 담은 이름)
+// 모양은 style.css .exp-angs (공용 .act 는 그대로 — spec C-002). 버튼 사이 간격은 CSS gap 이라 공백 없이 붙임
+function expAngleButtons(recorded: number[]) {
+  const th = angle();
+  return '<p class="exp-angs">' + EXP_ANGLES.map(a => {
+    const st = angleButtonState(a, th, recorded);
+    const attr = st === 'fired' ? ` disabled aria-label="${tr(`${a}°, 이미 쏨`, `${a}°, already fired`)}"` : st === 'current' ? ' aria-pressed="true"' : '';
+    return `<button class="act" data-act="seta" data-v="${a}"${attr}>${a}°</button>`;
+  }).join('') + '</p>';
+}
+// 4발 뒤 관찰 문장: 기록에 있는 각도만 말함 (spec §4 "관찰 문장" 표, FR-007). both 는 원래 문장 그대로
+const EXP_OBSERVATION: Record<ObservationKind, () => string> = {
+  both: () => tr('40°·45°·50°는 거리가 <b>거의 같고</b>, 30°와 60°도 서로 <b>비슷하죠?</b> (땅 높낮이 때문에 조금씩 달라요) 왜 그런지 다음 단계에서 봐요.',
+    '40°, 45° and 50° land <b>almost the same</b> distance, and 30° and 60° are <b>similar</b> too, right? (Uneven ground makes them differ a little.) We’ll see why next.'),
+  mid: () => tr('40°·45°·50°는 거리가 <b>거의 같죠?</b> (땅 높낮이 때문에 조금씩 달라요) 왜 그런지 다음 단계에서 봐요.',
+    '40°, 45° and 50° land <b>almost the same</b> distance, right? (Uneven ground makes them differ a little.) We’ll see why next.'),
+  pair: () => tr('30°와 60°는 거리가 서로 <b>비슷하죠?</b> (땅 높낮이 때문에 조금씩 달라요) 왜 그런지 다음 단계에서 봐요.',
+    '30° and 60° land a <b>similar</b> distance, right? (Uneven ground makes them differ a little.) We’ll see why next.'),
+  none: () => tr('각도에 따라 날아간 거리가 어떻게 달라졌는지 표에서 비교해 보세요. 왜 그런지 다음 단계에서 봐요.',
+    'Compare in the table how the distance changed with the angle. We’ll see why next.'),
+};
 // 기록이 없으면 지금 장약·각도로 첫 0.5초를 계산한 값 (진공에서는 vy가 0.5초에 4.9씩 일정하게 줄어듦)
 const rec0 = () => {
   if (stepRec0) return stepRec0;
@@ -226,14 +248,14 @@ export const TUT: TutStep[] = [
 
   {ch:CH4,target:()=>[FIELD()],ctrl:true,enter:()=>{if(S.airMode)setMode(false);setCharge(75);},
     waitLabel:P('서로 다른 각도로 4발 쏘기','Fire at 4 different angles'),gate:s=>new Set((s.exp||[]).map((q:{ang:number})=>q.ang)).size>=4,
-    on:{land:(s,r)=>{if(!r.out&&r.v0===75)(s.exp=s.exp||[]).push({ang:r.ang,dist:r.x-GUN_X});}},title:P('실험: 각도만 바꿔 보기','Experiment: change only the angle'),body:s=>{
+    // angle: 슬라이더가 움직이면 main.ts 가 보냄. 핸들러가 있어야 엔진이 이 단계를 스크롤 없이 다시 그려 버튼 '현재' 표시가 따라감 (research R-3)
+    on:{land:(s,r)=>{if(!r.out&&r.v0===75)(s.exp=s.exp||[]).push({ang:r.ang,dist:r.x-GUN_X});},angle:()=>{}},title:P('실험: 각도만 바꿔 보기','Experiment: change only the angle'),body:s=>{
       const e:{ang:number;dist:number}[]=s.exp||[],by:Record<number,number>={};e.forEach(q=>by[q.ang]=q.dist);const angs=Object.keys(by).map(Number).sort((a,b)=>a-b);
       let h='<p>'+tr(`장약을 <b>${chargeName(75)}</b>로 고정했어요. 이제 <b>각도만</b> 바꿔 가며 쏘고, 포탄이 얼마나 멀리 가는지 비교해 봐요. 깃발은 신경 쓰지 마세요.`,
         `The charge is locked at <b>${chargeName(75)}</b>. Now change <b>only the angle</b>, fire, and compare how far the shell goes. Ignore the flag.`)+'</p>'+
-        `<p>${[30,40,45,50,60].map(a=>`<button class="act" data-act="seta" data-v="${a}">${a}°</button>`).join(' ')}</p>`;
+        expAngleButtons(angs);
       if(angs.length)h+='<table class="steps"><tr><td>'+tr('발사각','Launch angle')+'</td><td>'+tr('날아간 거리','Distance flown')+'</td></tr>'+angs.map(a=>`<tr><td>${a.toFixed(1)}°</td><td><b>${by[a].toFixed(0)} m</b></td></tr>`).join('')+'</table>';
-      if(angs.length>=4)h+='<p class="fb">'+tr('40°·45°·50°는 거리가 <b>거의 같고</b>, 30°와 60°도 서로 <b>비슷하죠?</b> (땅 높낮이 때문에 조금씩 달라요) 왜 그런지 다음 단계에서 봐요.',
-        '40°, 45° and 50° land <b>almost the same</b> distance, and 30° and 60° are <b>similar</b> too, right? (Uneven ground makes them differ a little.) We’ll see why next.')+'</p>';
+      if(angs.length>=4)h+='<p class="fb">'+EXP_OBSERVATION[observationKind(angs)]()+'</p>';
       else h+='<p class="small">'+tr('각도 버튼을 누르고 발사! 서로 다른 각도로 4발 쏘면 넘어갈 수 있어요.','Pick an angle and fire! Fire at 4 different angles to move on.')+'</p>';
       // 다음 단계 그래프에 실험 점을 찍기 위해 저장
       angleExp=angs.map(a=>({ang:a,dist:by[a]}));

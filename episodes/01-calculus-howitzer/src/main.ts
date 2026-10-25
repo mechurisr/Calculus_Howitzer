@@ -33,11 +33,26 @@ refreshColors();
 onThemeChange(() => { refreshColors(); drawAll(); });
 window.addEventListener('resize', resize);
 
+// 튜토리얼 15단계 각도 버튼을 누르면 카드가 다시 그려져 초점이 사라짐 → 누른 버튼에 되돌림 (kitty-specs/howitzer-tutorial-angle-buttons-01M5RDY7 research R-4)
+// 그 클릭이 일으킨 다시 그리기(input → emit('angle'), 이어서 클릭 처리 — 둘 다 같은 이벤트 안에서 동기로 일어남)에서만 되돌리고
+// 이벤트가 끝나면 지움. 나중의 다시 그리기(착탄, 언어 전환)가 사용자가 옮긴 초점을 빼앗지 않게 (PR #11 크로스체크)
+let focusAng: string | undefined;
+function restoreAngFocus() {
+  if (!focusAng) return;
+  const b = document.querySelector<HTMLButtonElement>(`#tutBody .exp-angs [data-v="${focusAng}"]`);
+  if (b && !b.disabled) b.focus({ preventScroll: true });
+}
 const tut = createTutorial({
   steps: TUT, episode: 'howitzer', ctrl: $('tutCtrl'), openButton: $('tutOpen'),
   onEnd: refreshAngleNote,
-  onRender: updateFlightBtns,
-  onAction: a => { if (a.dataset.act === 'seta') setAngle(+a.dataset.v!); else if (a.dataset.act === 'setc') setCharge(+a.dataset.v!); },
+  onRender: () => { updateFlightBtns(); restoreAngFocus(); },
+  onAction: a => {
+    if (a.dataset.act === 'seta') {
+      if (a.closest('.exp-angs')) { focusAng = a.dataset.v; queueMicrotask(() => { focusAng = undefined; }); }
+      setAngle(+a.dataset.v!);
+    }
+    else if (a.dataset.act === 'setc') setCharge(+a.dataset.v!);
+  },
 });
 hooks.redraw = drawAll;
 hooks.emit = tut.emit;
@@ -51,6 +66,8 @@ bindInfoTips($('hint'));
 $('fire').onclick = fire; $('newT').onclick = newTarget;
 $('hintBtn').onclick = () => { if ($('hint').hidden) showHint(); else $('hint').hidden = true; };
 ['ang', 'vel'].forEach(id => $(id).addEventListener('input', () => { updateStats(); if (!$('hint').hidden) showHint(); }));
+// 슬라이더 드래그·± 버튼·키보드·각도 버튼 모두 이 input 을 거침. on.angle 이 있는 단계(15단계)만 스크롤 없이 다시 그려짐 (research R-3)
+$('ang').addEventListener('input', () => tut.emit('angle'));
 document.querySelectorAll<HTMLElement>('#charges button').forEach(b => b.onclick = () => setCharge(+b.dataset.v!));
 document.querySelectorAll<HTMLElement>('.nudge').forEach(b => b.onclick = () => {
   const el = $<HTMLInputElement>(b.dataset.t!);

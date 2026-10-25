@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "mission_slug": "howitzer-tutorial-angle-buttons-01M5RDY7",
+  "mission_id": "01M5RDY7CZ1QZQ35TZCD46FTSR",
+  "mission_branch": "kitty/mission-howitzer-tutorial-angle-buttons-01M5RDY7",
+  "target_branch": "mission/howitzer-tutorial-angle-buttons",
+  "lanes": [
+    {
+      "lane_id": "lane-a",
+      "wp_ids": [
+        "WP01"
+      ],
+      "write_scope": [
+        "episodes/01-calculus-howitzer/src/main.ts",
+        "episodes/01-calculus-howitzer/src/missions.ts",
+        "episodes/01-calculus-howitzer/src/model/angle-buttons.ts",
+        "episodes/01-calculus-howitzer/src/style.css",
+        "episodes/01-calculus-howitzer/tests/angle-buttons.test.ts"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "artifact-rendering"
+      ],
+      "depends_on_lanes": [],
+      "parallel_group": 0
+    },
+    {
+      "lane_id": "lane-b",
+      "wp_ids": [
+        "WP02"
+      ],
+      "write_scope": [
+        "e2e/angle-buttons.spec.ts",
+        "e2e/helpers.ts",
+        "e2e/parity.spec.ts",
+        "playwright.config.ts"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "legacy-cleanup",
+        "tracker-integration"
+      ],
+      "depends_on_lanes": [
+        "lane-a"
+      ],
+      "parallel_group": 1
+    }
+  ],
+  "computed_at": "2026-10-25T04:15:05.977880+00:00",
+  "computed_from": "dependency_graph+ownership",
+  "planning_artifact_wps": [],
+  "planning_commit_sha": "358ed6bbb7962c69533e85e594e76fdf43b7a318"
+}

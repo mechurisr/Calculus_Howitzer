@@ -35,3 +35,13 @@
 .ang-track[data-ticks] .tick-note{font:12px/18px var(--body);color:var(--ink);white-space:nowrap}
 /* 화면 낭독기 전용 (보이지 않지만 읽힘) */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* 튜토리얼 15단계 각도 버튼 (kitty-specs/howitzer-tutorial-angle-buttons-01M5RDY7). 공용 .act 는 그대로 (spec C-002)
+   한 줄·간격 8px·폭은 카드 내용 폭을 나눠 가짐: 360px 에서 내용 폭 287px(클래식 스크롤바)이면 (287 − 4·8)/5 = 51px (answers.md V1).
+   내용 폭이 252px(= 5·44 + 4·8)보다 좁으면(360px 미만 화면) 가로로 넘치지 않고 두 줄로 (spec Assumptions) */
+.tut-body .exp-angs{display:flex;flex-wrap:wrap;gap:8px}
+.tut-body .exp-angs .act{flex:1 1 0;min-width:44px;min-height:44px;padding:0 4px}
+/* 상태는 채움으로도 구분 (흑백에서도 보이게, NFR-002). 대비: 현재 ink/bg 13.3:1, 쏜 각도 muted/line 밝은 3.6:1·어두운 4.5:1 (spec-review.md 2절)
+   투명도로 흐리게 하지 않음 — opacity .45 면 3:1 미달 (검토 R11) */
+.tut-body .exp-angs .act[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tut-body .exp-angs .act:disabled{background:var(--line);border-color:var(--line);color:var(--muted);cursor:default}
