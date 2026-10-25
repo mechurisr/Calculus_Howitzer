@@ -21,6 +21,7 @@ pnpm check          # 타입 검사 + 의존 규칙 + 단위 테스트
 pnpm test:e2e       # 브라우저 테스트 (이전 비교는 약 8분)
 pnpm build          # dist/
 scripts/review-agent.sh spec|pr-check|fact-check <대상>   # 검토 에이전트 실행
+scripts/review-status.sh [--watch]   # 검토 진행 상태 (단계·시간·도구 호출·멈춤 의심·결과물)
 scripts/workspace.sh [--open|--close]   # herdr 작업 공간 (herdr 안에서)
 ```
 
