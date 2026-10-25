@@ -1,0 +1,16 @@
+{
+  "coordination_branch": "kitty/mission-howitzer-tutorial-act-buttons-01M5RVRJ",
+  "created_at": "2026-10-25T06:25:28.057281+00:00",
+  "flattened": false,
+  "friendly_name": "튜토리얼 조작 버튼 44px",
+  "mission_id": "01M5RVRJZ4XVFXDM3ZTW0Y5J1W",
+  "mission_number": null,
+  "mission_slug": "howitzer-tutorial-act-buttons-01M5RVRJ",
+  "mission_type": "software-dev",
+  "pr_bound": true,
+  "purpose_context": "미적분 자주포 튜토리얼 카드의 조작 버튼(θ 넣기, 장약 올리기·내리기)은 높이가 41.25px로 헌장 PRJ-004의 44×44 CSS px에 못 미친다. Issue #4 스펙 검토(R10)에서 발견해 Issue #9로 분리했다. 15단계 각도 버튼은 #4에서 이미 44px로 맞췄다.",
+  "purpose_tldr": "튜토리얼 카드의 조작 버튼(.act)을 터치 기준 44px 이상으로 키운다",
+  "slug": "howitzer-tutorial-act-buttons-01M5RVRJ",
+  "target_branch": "mission/howitzer-tutorial-act-buttons",
+  "topology": "coord"
+}
