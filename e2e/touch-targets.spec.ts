@@ -37,11 +37,11 @@ test('360px 튜토리얼 22단계: 카드 안 모든 버튼 44×44 이상, 긴 �
     actsMeasured += bs.filter(b => b.act).length;
     await noHScroll(page);
 
-    const at = ['19 / 22', '20 / 22'].find(s => step.includes(s));
-    if (!at || deepChecked.has(at)) return;
+    // 검토 S5: 버튼이 커진 만큼만 카드 안 스크롤이 깊어지고, 끝까지 내리면 "다음"이 카드 안에 보임.
+    // 19·20단계는 처음엔 "먼저 한 발 쏘세요"만 있고 조작 버튼이 없음 → 버튼이 나타난 뒤에 잼 (PR #14 크로스체크)
+    const at = ['19 / 22', '20 / 22'].find(s => step.includes(s)), acts = bs.filter(b => b.act).length;
+    if (!at || deepChecked.has(at) || acts === 0) return;
     deepChecked.add(at);
-    // 검토 S5: 버튼이 커진 만큼만 카드 안 스크롤이 깊어지고, 끝까지 내리면 "다음"이 카드 안에 보임
-    const acts = bs.filter(b => b.act).length;
     const r = await page.evaluate(() => {
       const card = document.getElementById('tut')!, top = card.scrollTop;
       card.scrollTop = card.scrollHeight;
@@ -64,5 +64,7 @@ test('360px 튜토리얼 22단계: 카드 안 모든 버튼 44×44 이상, 긴 �
     }
   });
   expect(actsMeasured, '조작 버튼(.act)이 실제로 측정됨').toBeGreaterThan(0);
+  // 자동 진행에서는 20단계가 조작 버튼 없이 넘어가므로(첫 발로 진행) 19단계는 반드시 재야 함
+  expect(deepChecked.has('19 / 22'), '조작 버튼이 있는 19단계에서 스크롤 깊이를 잼').toBe(true);
   expect(englishChecked).toBe(true);
 });
