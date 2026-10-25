@@ -1,0 +1,16 @@
+{
+  "coordination_branch": "kitty/mission-howitzer-tutorial-step5-text-01M5S15W",
+  "created_at": "2026-10-25T08:00:06.776129+00:00",
+  "flattened": false,
+  "friendly_name": "튜토리얼 5단계 설명 순서와 문구",
+  "mission_id": "01M5S15WK623GB3HS32HBY3GV7",
+  "mission_number": null,
+  "mission_slug": "howitzer-tutorial-step5-text-01M5S15W",
+  "mission_type": "software-dev",
+  "pr_bound": true,
+  "purpose_context": "미적분 자주포 튜토리얼 5/22단계는 0.5초 조각 표 아래에 '그런데…' 의문이 먼저 나오고 표 설명은 맨 아래에 있어, 학습자가 표를 이해하기 전에 의문으로 넘어간다. 또 발사 전 안내의 '한 걸음씩 날려 보세요'가 어색하다. 사람이 제안·채택한 순서(표 → 표 설명 → 그런데 → 이유 상자)와 문구로 바꾼다 (Issue #10).",
+  "purpose_tldr": "튜토리얼 5단계(손으로 쌓아 보기)에서 표 설명을 표 바로 아래로 옮기고 발사 전 안내 문구를 자연스럽게 고친다",
+  "slug": "howitzer-tutorial-step5-text-01M5S15W",
+  "target_branch": "mission/howitzer-tutorial-step5-text",
+  "topology": "coord"
+}
