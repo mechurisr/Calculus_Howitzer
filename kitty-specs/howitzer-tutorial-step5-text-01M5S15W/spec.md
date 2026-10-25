@@ -2,7 +2,7 @@
 
 **Mission Branch**: `mission/howitzer-tutorial-step5-text`  
 **Created**: 2026-10-25  
-**Status**: Draft  
+**Status**: Draft (스펙 검토 반영 2026-10-25)  
 **Input**: Issue #10 (사람 제안·채택) — 미적분 자주포 튜토리얼 5/22단계("손으로 쌓아 보기")에서 표 설명을 표 바로 아래로 옮기고 그 뒤에 "그런데…"가 오게, 발사 전 안내의 "한 걸음씩 날려 보세요"를 자연스럽게
 
 ## Episode Design *(기존 에피소드 01-calculus-howitzer 개선: 바뀌는 항목만 작성)*
@@ -62,7 +62,8 @@ See `answers.md` in this folder. *(Do not copy answers into this file.)*
 
 | Item | Source | URL | Verified? |
 |------|--------|-----|-----------|
-| 5단계 정의 | `episodes/01-calculus-howitzer/src/missions.ts` 2장 "손으로 쌓아 보기" | — | yes |
+| 5단계 정의 | `episodes/01-calculus-howitzer/src/missions.ts` 2장 "손으로 쌓아 보기" (문구·진행 조건 4번·표 형식) | — | yes |
+| 진행 한 번 = 0.5초 | `episodes/01-calculus-howitzer/src/game.ts` `stepOnce`(0.01초 × 50걸음), `src/model/constants.ts` `DT = 0.01` | — | yes |
 | 중력가속도 9.8 m/s² | `episodes/01-calculus-howitzer/src/model/constants.ts` `G` (표준중력 9.80665 반올림) | — | yes |
 | 문구 후보 B | Issue #10 (사람 선택) | https://github.com/mechurisr/Math-Role-Simulations/issues/10 | yes |
 
@@ -121,7 +122,7 @@ See `answers.md` in this folder. *(Do not copy answers into this file.)*
 
 | ID | Title | Requirement | Category | Priority | Status |
 |----|-------|-------------|----------|----------|--------|
-| NFR-001 | 회귀 검사 정확도 | 이전 버전 비교에서 5단계는 가리지 않고, 원본 카드 본문에 §4의 두 변경(문장 치환 1개, 덩어리 순서)을 적용한 결과와 글자까지 같아야 통과한다. 그 밖의 단계·요소는 지금처럼 그대로 비교 | Reliability | High | Open |
+| NFR-001 | 회귀 검사 정확도 | 이전 버전 비교에서 5단계는 가리지 않고, 원본 카드 본문에 §4의 두 변경(문장 치환 1개, 덩어리 순서)을 적용한 결과와 글자까지 같아야 통과한다. 그 밖의 단계·요소는 지금처럼 그대로 비교. 검토 R1의 세 함정을 막는다: ① 5단계는 단계 번호가 정확히 5인 스냅샷으로 고른다(`15 / 22`와 섞이지 않게) ② 변환이 실제로 적용됐는지(발사 전 문구 치환, 순서 재배치 각각 적어도 한 번) 단언한다 ③ 카드 본문과 본문을 품은 카드 전체, 두 스냅샷에 모두 적용한다 | Reliability | High | Open |
 
 ### Constraints
 
@@ -135,10 +136,10 @@ See `answers.md` in this folder. *(Do not copy answers into this file.)*
 
 ### Measurable Outcomes
 
-- **SC-001**: 5단계에서 0.5초 진행 뒤 카드의 덩어리 순서가 §4 ② "바뀐 뒤"와 같다 (한/영)
+- **SC-001**: 5단계에서 0.5초 진행 뒤 카드의 덩어리 순서가 §4 ② "바뀐 뒤"와 같다 — 한국어는 이전 비교와 새 브라우저 테스트로, 영어는 새 브라우저 테스트에서 언어를 바꿔 한 번 확인 (검토 S3)
 - **SC-002**: 이전 비교에서 §4의 두 변경 외 차이 0건
 
 ## Assumptions
 
-- 표 설명 문장은 지금처럼 작은 글씨로 둔다 (사람이 순서만 지정, 2026-10-25 의도 요약 승인)
+- 표 설명 문장은 지금처럼 작은 회색 글씨로 둔다 (사람이 순서만 지정, 2026-10-25 의도 요약 승인. 검토 S2의 색 변경 제안은 사람이 ① 그대로를 선택)
 - 순서와 문구는 Issue #10에서 사람이 고른 그대로다 (순서: ① → ② → ⑤ → ③ → ④, 문구 후보 B)
