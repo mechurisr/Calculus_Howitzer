@@ -16,7 +16,8 @@ body.tut-open{padding-bottom:55vh}
 .tut-body .quiz .right{border:2px solid var(--good);color:var(--good);font-weight:700}
 .tut-body .quiz .wrong{border:2px solid var(--bad);color:var(--bad)}
 .tut-body .fb{font-weight:500} .tut-body .fb.good{color:var(--good)} .tut-body .fb.bad{color:var(--bad)}
-.tut-body .act{padding:8px 12px;border:1px solid var(--blue);border-radius:4px;background:var(--bg);color:var(--blue);font:inherit;font-weight:700;cursor:pointer}
+/* 터치 대상 44px (헌장 PRJ-004, kitty-specs/howitzer-tutorial-act-buttons-01M5RVRJ): 원래 높이 41.25px → 최소 44. 고정 높이는 긴 문구를 자르므로 min */
+.tut-body .act{padding:8px 12px;border:1px solid var(--blue);border-radius:4px;background:var(--bg);color:var(--blue);font:inherit;font-weight:700;cursor:pointer;min-height:44px;min-width:44px}
 .tut-body table.steps{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;width:100%}
 .tut-body table.steps tr:first-child td{font-family:var(--body);color:var(--muted)}
 .tut-ctrl{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px}

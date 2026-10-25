@@ -46,4 +46,5 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0}
 .small{font-size:13px;color:var(--muted)}
 /* 언어 토글: 튜토리얼이 화면을 어둡게 해도 누를 수 있게 dim(999)·카드(1001)보다 위 */
 .lang-btn{position:absolute;top:0;right:0;z-index:1002;padding:6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);font:500 13px/1.2 var(--body);cursor:pointer}
-.tut-btn{margin-top:10px;padding:8px 12px;border:1px solid var(--accent);border-radius:4px;background:transparent;color:var(--accent);font:inherit;font-weight:700;cursor:pointer}
+/* 터치 대상 44px (헌장 PRJ-004, kitty-specs/howitzer-tutorial-act-buttons-01M5RVRJ): 원래 높이 41.25px → 최소 44. 고정 높이는 긴 문구를 자르므로 min */
+.tut-btn{margin-top:10px;padding:8px 12px;border:1px solid var(--accent);border-radius:4px;background:transparent;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;min-height:44px;min-width:44px}
