@@ -1,0 +1,30 @@
+{
+  "entries": [
+    {
+      "created_at": "2026-10-25T06:25:35.853148Z",
+      "decision_id": "01M5RVRTKDYGQM7ZRAPJ76VNKB",
+      "final_answer": "\uc5d4\uc9c4 \uacf5\uc6a9 \uc2a4\ud0c0\uc77c",
+      "input_key": "fix_location",
+      "mission_id": "01M5RVRJZ4XVFXDM3ZTW0Y5J1W",
+      "mission_slug": "howitzer-tutorial-act-buttons-01M5RVRJ",
+      "opened_by": "cli",
+      "options": [
+        "\uc5d4\uc9c4 \uacf5\uc6a9 \uc2a4\ud0c0\uc77c",
+        "\uc5d0\ud53c\uc18c\ub4dc \uc804\uc6a9",
+        "Other"
+      ],
+      "origin_flow": "specify",
+      "other_answer": false,
+      "question": "44px \uc218\uc815\uc744 \uc5d4\uc9c4 \uacf5\uc6a9 \ud29c\ud1a0\ub9ac\uc5bc \uc2a4\ud0c0\uc77c(.tut-body .act)\uc5d0 \ud560\uae4c, \uc790\uc8fc\ud3ec \uc5d0\ud53c\uc18c\ub4dc \uc804\uc6a9\uc73c\ub85c \ud560\uae4c?",
+      "rationale": null,
+      "resolved_at": "2026-10-25T06:26:00.160503Z",
+      "resolved_by": null,
+      "slot_key": "specify.scope.fix-location",
+      "status": "resolved",
+      "step_id": null,
+      "summary_json": null
+    }
+  ],
+  "mission_id": "01M5RVRJZ4XVFXDM3ZTW0Y5J1W",
+  "version": 1
+}

@@ -6,11 +6,11 @@ export const LEGACY = pathToFileURL(resolve('e2e/legacy/howitzer.html')).href;
 export const CURRENT = '/episodes/01-calculus-howitzer/';
 
 // Math.random을 고정 시드(mulberry32)로 바꾸고 시계를 가짜로 바꿔, 두 페이지가 같은 입력에서 같은 결과를 내는지 비교할 수 있게 함
-export async function open(page: Page, url: string, o: { seed?: number; tutorial?: boolean; ticks?: boolean } = {}) {
+export async function open(page: Page, url: string, o: { seed?: number; tutorial?: boolean; ticks?: boolean; touch?: boolean } = {}) {
   // 시계를 멈춰 둠: 실제 시간이 흐르면 클릭 타이밍에 따라 비행 중 정지 시점이 프레임 단위로 달라짐. 시간은 advance로만 진행
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:01Z'));
-  await page.addInitScript(([seed, tutorial, ticks]) => {
+  await page.addInitScript(([seed, tutorial, ticks, touch]) => {
     let a = seed >>> 0;
     Math.random = () => {
       a = (a + 0x6d2b79f5) >>> 0; let t = a;
@@ -28,7 +28,14 @@ export async function open(page: Page, url: string, o: { seed?: number; tutorial
     if (!ticks) document.addEventListener('readystatechange', () => {
       if (document.readyState === 'interactive') document.querySelector('.ang-track')?.removeAttribute('data-ticks');
     });
-  }, [o.seed ?? 12345, !!o.tutorial, !!o.ticks] as const);
+    // 원본 비교는 머리말 튜토리얼 버튼 44px 변경 전 배치로 (kitty-specs/howitzer-tutorial-act-buttons-01M5RVRJ C-002, research R-2):
+    // 버튼이 2.75px 커지면 아래 내용이 밀려 스크린샷·스크롤 위치가 달라지기 때문. 44px 자체는 touch-targets.spec.ts 가 검사.
+    // 카드 안 .act 는 고정 위치 카드 안이라 페이지 배치·HTML 스냅샷에 영향이 없어 끄지 않음. touch: true 면 그대로 둠
+    if (!touch) document.addEventListener('readystatechange', () => {
+      if (document.readyState !== 'interactive') return;
+      const st = document.createElement('style'); st.textContent = '.tut-btn{min-height:0!important;min-width:0!important}'; document.head.append(st);
+    });
+  }, [o.seed ?? 12345, !!o.tutorial, !!o.ticks, !!o.touch] as const);
   await page.goto(url);
   await page.evaluate(() => document.fonts.ready);
   await advance(page, 100);
@@ -110,7 +117,7 @@ export async function walkTutorial(page: Page, onStep: (i: number, step: string)
 
 // 튜토리얼 15단계 "실험: 각도만 바꿔 보기"까지 자동 진행 (kitty-specs/howitzer-tutorial-angle-buttons-01M5RDY7, e2e/angle-buttons.spec.ts)
 export async function gotoExperimentStep(page: Page) {
-  await open(page, CURRENT, { tutorial: true, ticks: true });
+  await open(page, CURRENT, { tutorial: true, ticks: true, touch: true });
   // 앞 단계에서 일시정지된 포탄이 남아 있으면 15단계에서 착탄해 기록에 들어감 → 14단계에서 먼저 떨어뜨려 빈 기록으로 시작
   let flushed = false;
   await walkTutorial(page, async (_i, step) => {
