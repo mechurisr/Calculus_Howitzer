@@ -30,6 +30,7 @@ test('발사 전 안내 문구, 진행 뒤 표 → 표 설명 → 의문 → 이
   expect(await body(page)).not.toContain('한 걸음씩');
   await switchLang(page);
   expect(await body(page)).toContain('Then press Step 0.5 s ⏭ to send the shell forward 0.5 s at a time.');
+  expect(await body(page)).not.toContain('one step at a time');
   await switchLang(page);
 
   // US1-1: 한 번 진행한 뒤 순서
@@ -41,11 +42,12 @@ test('발사 전 안내 문구, 진행 뒤 표 → 표 설명 → 의문 → 이
   expect(await blocks(page)).toEqual(['piece', 'table', 'explain', 'question', 'reason']);
   await switchLang(page);
 
-  // US1-2: 4번 이상 진행하면 "더 눌러 보기"가 맨 끝, 음수 안내는 그 앞
+  // US1-2: 4번 진행하면 "더 눌러 보기"가 맨 끝
   for (let i = 0; i < 3; i++) await stepOnce(page);
-  for (let i = 0; i < 6 && !(await blocks(page)).includes('negative'); i++) await stepOnce(page);
-  const b = await blocks(page);
-  expect(b.slice(0, 5)).toEqual(['piece', 'table', 'explain', 'question', 'reason']);
-  expect(b.at(-1)).toBe('more');
-  if (b.includes('negative')) expect(b.slice(-2)).toEqual(['negative', 'more']);
+  expect(await blocks(page)).toEqual(['piece', 'table', 'explain', 'question', 'reason', 'more']);
+  // 조각이 음수가 되면 그 안내가 이유 상자와 "더 눌러 보기" 사이. 기본 설정(vy0 = 75·sin45° ≈ 53.0, 0.5초마다 4.9 감소)에서
+  // vy 는 11번째 진행 끝(5.5초)에 −0.9 로 처음 음수지만 조각 = (시작 + 끝)/2 × 0.5 = (4.0 − 0.9)/2 × 0.5 > 0 이라 아직 양수,
+  // 조각은 12번째 진행에 처음 음수 → 12번까지 누름 (PR #17 크로스체크: 9번까지만 눌러 이 단언이 돌지 않던 문제)
+  for (let i = 4; i < 12; i++) await stepOnce(page);
+  expect(await blocks(page)).toEqual(['piece', 'table', 'explain', 'question', 'reason', 'negative', 'more']);
 });

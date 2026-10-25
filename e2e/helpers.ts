@@ -152,6 +152,7 @@ export function maskExperimentStep(html: string) {
 // 튜토리얼 5단계 "손으로 쌓아 보기" (kitty-specs/howitzer-tutorial-step5-text-01M5S15W NFR-001): 원본 카드 HTML 에 이번 두 변경을
 // 같은 규칙으로 적용해 새 버전과 글자까지 비교함 (가리지 않음). snapshot() 의 norm() 을 거친 HTML(태그 사이 공백 제거)에 씀
 // ① 발사 전 안내 마지막 문장 치환 ② 표 설명 문단을 "🤔 그런데…" 앞으로. 이유 상자 안 <span class="small"> 과 섞이지 않게 문단 시작을 고정
+// 문장 치환은 한국어만 (이전 비교 walkthrough 가 한국어로 돎). 영어로 비교하게 되면 영어 문장 치환을 더해야 함
 // replaced·reordered 로 실제 적용 여부를 돌려줌 — 정규식이 안 맞아 조용히 비교가 통과·실패하지 않게 (스펙 검토 R1)
 export function legacyStep5(html: string) {
   const a = html.replace('한 걸음씩 날려 보세요.', '포탄을 0.5초씩 앞으로 보내 보세요.');
