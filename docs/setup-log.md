@@ -219,3 +219,16 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 - **`python3 -c` (막힌 지점 4)**: 1차 스펙 검토(`spec-review`)에서 제거. 1차는 식·근사로 풀고 근사를 표시, 2차가 `python3 -c`로 정밀 대조 (`docs/agents/review-spec.md`). 대안으로 `bc -l`(파일 입출력 없음)을 검토했으나 미설치
 - 정리: worktree `-coord`·`-lane-a`, 브랜치 `kitty/mission-howitzer-angle-ticks-01M5Q3M8*`, `setup/monorepo`·`setup/workspace`·`mission/howitzer-angle-ticks`(로컬·원격) 삭제
 - 미해결: 검토 에이전트 멈춤 근본 원인 (막힌 지점 1)
+
+## 검토 실행 보완 (2026-10-25, Issue #4 스펙 검토 중)
+
+1차 스펙 검토(`spec-review`)가 30분 제한에 걸려 `spec-review.md`를 요약과 1절 일부까지만 쓰고 끝남. 이어받기 실행은 시작 직후 멈춤.
+
+| 증상 | 원인 (확인 방법) | 대응 (`scripts/review-agent.sh`) |
+|---|---|---|
+| 시간 제한(exit 124) 뒤 이어받기를 하지 않고 스크립트 종료 | `set -euo pipefail`에서 `oc`의 실패가 곧바로 스크립트를 끝냄 | `oc_try`: 실패 코드를 로그에 남기고 결과물 확인·이어받기로 진행 |
+| 일부만 쓴 `spec-review.md`를 1차 완료로 판정 | 완료 판정이 파일 존재만 봄. 검토 에이전트는 `<!-- PART2 -->` 자리표시를 남기고 끊김 | 1차 완료 = 마지막 절 `## 4. 구현 가능성`·`## 반영 결과`가 있고 `<!-- PART`/`<!-- TODO` 주석이 없음 |
+| `opencode run`이 서버에 요청을 보내지 않고 대기 (로그는 `cli starting`뿐) | stdin이 터미널이 아니면 EOF까지 읽어 메시지에 붙임. 에이전트 도구의 백그라운드 실행은 stdin이 열린 소켓이라 EOF가 오지 않음 (`ss -axp`로 클라이언트 fd 0 확인, `</dev/null`로 재실행하자 즉시 진행) | `oc`의 `opencode run`에 `</dev/null` |
+
+- 시험: 가짜 `opencode`(stdin 경로 출력 후 exit 124)로 stdin = `/dev/null`, 124 뒤 이어받기 단계 진입, 일부만 쓴 파일 = 미완료 판정 확인
+- 막힌 지점 1(멈춤)의 일부가 같은 stdin 원인이었을 수 있음 (미확인 — 7단계 실행은 대부분 사람 터미널에서 시작)
