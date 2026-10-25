@@ -1,7 +1,7 @@
 // 튜토리얼 버튼 터치 크기 44px (kitty-specs/howitzer-tutorial-act-buttons-01M5RVRJ, 헌장 PRJ-004)
 // CI 에서는 chromium·firefox·webkit 세 엔진으로 실행 (playwright.config.ts). 튜토리얼 22단계를 끝까지 진행해서 수십 초
 import { expect, test, type Page } from '@playwright/test';
-import { CURRENT, open, walkTutorial } from './helpers';
+import { CURRENT, advance, open, tap, walkTutorial } from './helpers';
 
 test.describe.configure({ timeout: 600_000 });
 test.use({ viewport: { width: 360, height: 800 } });
@@ -67,4 +67,27 @@ test('360px 튜토리얼 22단계: 카드 안 모든 버튼 44×44 이상, 긴 �
   // 자동 진행에서는 20단계가 조작 버튼 없이 넘어가므로(첫 발로 진행) 19단계는 반드시 재야 함
   expect(deepChecked.has('19 / 22'), '조작 버튼이 있는 19단계에서 스크롤 깊이를 잼').toBe(true);
   expect(englishChecked).toBe(true);
+});
+
+// 힌트 해설 (i) 버튼·404 링크 (kitty-specs/touch-targets-info-404-01M5S8E9, Issue #13·#15)
+test('힌트 해설 (i) 버튼: 보이는 원 18px 그대로, 누르는 영역 44×44 (FR-001, US1)', async ({ page }) => {
+  await open(page, CURRENT, { touch: true, ticks: true });
+  await tap(page, '#hintBtn'); await advance(page, 100);
+  const r = await page.locator('#hint .info').evaluate(b => {
+    b.scrollIntoView({ block: 'center' });   // 화면 밖 좌표는 elementFromPoint 가 아무것도 돌려주지 않음
+    const box = b.getBoundingClientRect(), cx = box.left + box.width / 2, cy = box.top + box.height / 2;
+    // 원 중심에서 상하좌우·대각선 21px(= 44/2 − 1) 지점이 모두 이 버튼으로 눌리는지 (힌트 상자 가장자리에서 잘리지 않는지 포함)
+    const pts = [[0, 0], [-21, 0], [21, 0], [0, -21], [0, 21], [-21, -21], [21, -21], [-21, 21], [21, 21]];
+    return { w: box.width, h: box.height, miss: pts.filter(([dx, dy]) => document.elementFromPoint(cx + dx, cy + dy) !== b).map(p => p.join(',')) };
+  });
+  expect(r.w).toBe(18); expect(r.h).toBe(18);
+  expect(r.miss, '누르는 영역 밖으로 나온 지점').toEqual([]);
+});
+
+test('404 페이지 에피소드 목록 링크 44×44 이상, 가로 스크롤 없음 (FR-002, US2)', async ({ page }) => {
+  await page.goto('/404.html');
+  const b = (await page.locator('a.tut-btn').boundingBox())!;
+  expect(b.width).toBeGreaterThanOrEqual(44);
+  expect(b.height).toBeGreaterThanOrEqual(44);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
