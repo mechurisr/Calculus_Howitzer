@@ -20,7 +20,7 @@ pnpm 버전은 파일로 지정할 수 없어서(Cloudflare 기본값 10.11.1) �
 > 설정 PR을 먼저 연 다음 연결하면, 그 PR의 미리보기 빌드로 설정을 확인할 수 있습니다.
 
 1. Cloudflare 대시보드 → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
-2. GitHub 권한을 주고 `mechurisr/Calculus_Howitzer` 선택
+2. GitHub 권한을 주고 `mechurisr/Math-Role-Simulations` 선택 (2026-10-25 `Calculus_Howitzer`에서 이름 변경)
 3. 빌드 설정
    - Project name: **`math-role-sims`** (`wrangler.toml`의 `name`과 같아야 함. 다른 이름을 쓰면 `wrangler.toml`도 고쳐 주세요)
    - Production branch: `main`
