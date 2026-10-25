@@ -14,6 +14,14 @@ cd "$(dirname "$0")/.."
 mkdir -p logs
 log="logs/review-$agent-$(echo "$target" | tr -c 'A-Za-z0-9._-' '_' | cut -c1-60)-$(date +%Y%m%d-%H%M%S).log"
 echo "로그: $log"
+# 진행 상태 기록 (scripts/review-status.sh 가 읽음): 줄마다 "<종류> <epoch> …"
+#   start <t> <agent> <run|resume N> <상세 로그 바이트 위치> · stop <t> <agent> <exit> · done <t> <agent> · end <t> <exit>
+meta="${log%.log}.meta"
+case $agent in spec) stages=2 ;; *) stages=1 ;; esac
+printf 'kind %s\ntarget %s\nstages %s\nlimit %s\n' "$agent" "$target" "$stages" "${REVIEW_TIMEOUT:-30m}" > "$meta"
+trap 'echo "end $(date +%s) $?" >> "$meta"' EXIT
+mark() { local k=$1; shift; echo "$k $(date +%s) $*" >> "$meta"; }
+dbg_size() { stat -c %s "${log%.log}.debug.log" 2>/dev/null || echo 0; }
 # 단계마다 30분 제한: 모델·도구가 멈추면 무한정 기다리지 않음 (REVIEW_TIMEOUT 으로 바꿀 수 있음)
 #   제한에 걸려도(exit 124) 스크립트를 끝내지 않고 아래 결과물 확인·이어받기로 넘어간다
 # stdin 은 /dev/null: opencode run 은 stdin 이 터미널이 아니면 EOF 까지 읽어 메시지에 붙이므로, 열린 stdin
@@ -36,19 +44,22 @@ done_check() {
   esac
 }
 oc() { timeout "${REVIEW_TIMEOUT:-30m}" opencode run --standalone --print-logs --log-level "${REVIEW_LOG_LEVEL:-info}" "$@" </dev/null 2>>"${log%.log}.debug.log" | tee -a "$log"; }
-oc_try() { oc "$@" || echo "실행이 코드 $? 로 끝남 (124 = 시간 제한)" | tee -a "$log"; }
+oc_try() { local rc=0; oc "$@" || { rc=$?; echo "실행이 코드 $rc 로 끝남 (124 = 시간 제한)" | tee -a "$log"; }; mark stop "$cur_agent" "$rc"; }
 run() {
   local a=$1 title="review $1 $target $(date +%s)"
   case $a in pr-check) before=$(count_marker pr '크로스체크 \\(검토 에이전트\\)') ;; fact-check) before=$(count_marker issue '팩트체크 \\(검토 에이전트\\)') ;; esac
+  cur_agent=$a; mark start "$a" run "$(dbg_size)"
   oc_try --title "$title" --agent "$a" "$2"
   for try in 1 2 3; do
-    done_check "$a" && return 0
+    done_check "$a" && { mark done "$a"; return 0; }
     local sid
     sid=$(opencode session list -n 30 --format json | jq -r --arg t "$title" '[.[] | select(.title == $t)][0].id // empty')
     [[ -z $sid ]] && { echo "세션을 찾지 못함: $title" >&2; return 1; }
     echo "결과물이 없어 세션을 이어받음 ($try/3): $sid" | tee -a "$log"
+    mark start "$a" "resume $try" "$(dbg_size)"
     oc_try --session "$sid" --agent "$a" "실행이 중간에 끊겼다. 지금까지 조사한 내용으로 지시문대로 마무리하고, 결과물(댓글 또는 spec-review.md)을 반드시 남겨."
   done
+  done_check "$a" && { mark done "$a"; return 0; }
   done_check "$a" || { echo "3번 이어받아도 결과물이 없음: $a $target (로그: $log)" >&2; return 1; }
 }
 case $agent in
