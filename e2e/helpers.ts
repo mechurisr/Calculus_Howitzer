@@ -93,11 +93,51 @@ export async function walkTutorial(page: Page, onStep: (i: number, step: string)
     const acts = page.locator('#tutBody .act'), wantPause = (await text('#tutNext')).includes('일시정지');
     const paused = (await text('#tPause')).includes('계속');
     if (await page.locator('#tFire').isEnabled()) {
-      if (await acts.count() && c % 2 === 0) await tap(page, '#tutBody .act', (c >> 1) % await acts.count());
+      if (await acts.count() && c % 2 === 0) {
+        // 15단계는 이미 쏜 각도 버튼이 비활성 (kitty-specs/howitzer-tutorial-angle-buttons-01M5RDY7). 원본은 그 버튼을 눌러 같은 각도로 다시 쏘므로,
+        // 같은 발사가 되도록 비활성 버튼의 각도는 슬라이더로 맞춤 (버튼을 누른 것과 같은 input 경로)
+        const n = (c >> 1) % await acts.count(), b = acts.nth(n);
+        if (await b.isDisabled()) await setAngle(page, +(await b.getAttribute('data-v'))!);
+        else await tap(page, '#tutBody .act', n);
+      }
       else await tap(page, '#tFire');
       c++;
     } else if (await page.locator('#tStep').isEnabled() && await page.locator('#tPause').isDisabled()) await tap(page, '#tStep');
     else if (await page.locator('#tPause').isEnabled() && (paused || wantPause)) await tap(page, '#tPause');
     await advance(page, 1200);
   }
+}
+
+// 튜토리얼 15단계 "실험: 각도만 바꿔 보기"까지 자동 진행 (kitty-specs/howitzer-tutorial-angle-buttons-01M5RDY7, e2e/angle-buttons.spec.ts)
+export async function gotoExperimentStep(page: Page) {
+  await open(page, CURRENT, { tutorial: true, ticks: true });
+  // 앞 단계에서 일시정지된 포탄이 남아 있으면 15단계에서 착탄해 기록에 들어감 → 14단계에서 먼저 떨어뜨려 빈 기록으로 시작
+  let flushed = false;
+  await walkTutorial(page, async (_i, step) => {
+    if (!flushed && step.includes('14 / 22')) { flushed = true; await landPending(page); }
+    return step.includes('15 / 22');
+  });
+}
+async function landPending(page: Page) {
+  for (let i = 0; i < 120 && await page.locator('#tFire').isDisabled(); i++) {
+    if (((await page.locator('#tPause').textContent()) ?? '').match(/계속|Resume/)) await tap(page, '#tPause');
+    await advance(page, 500);
+  }
+}
+// 튜토리얼 카드의 발사 버튼으로 쏘고 착탄(기록)까지 진행
+export async function tutFire(page: Page) {
+  // 발사 버튼은 다음 프레임에 꺼짐 → 한 프레임 넘긴 뒤 다시 켜질 때(착탄)까지 진행.
+  // 앞 단계에서 일시정지된 채 들어오면 포탄이 멈춰 있으므로 '계속'을 누름 (walkTutorial 과 같은 처리)
+  await tap(page, '#tFire'); await advance(page, 50);
+  await landPending(page);
+  await advance(page, 200);
+}
+// 이전 비교에서 15단계 카드 본문의 허용 차이 두 가지만 자리표시로 바꿈 (spec C-003, research R-7):
+// ① 각도 버튼 5개 줄 — 원본은 <p><button …>30°</button> …</p>, 새 버전은 <p class="exp-angs"> + 상태 속성
+// ② 4발 뒤 관찰 문장 <p class="fb"> — 15단계 본문의 fb 는 이 문장 하나뿐
+// snapshot() 의 norm() 을 거친 HTML(태그 사이 공백 제거)에 씀
+export function maskExperimentStep(html: string) {
+  return html
+    .replace(/<p[^>]*>(?:<button class="act" data-act="seta"[^>]*>[^<]*<\/button>){5}<\/p>/, '<p>[angle-buttons]</p>')
+    .replace(/<p class="fb">.*?<\/p>/, '<p class="fb">[observation]</p>');
 }
