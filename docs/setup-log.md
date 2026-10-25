@@ -208,3 +208,14 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 10. **로컬 테스트가 옛 서버를 재사용**: 사람에게 보여 주려고 띄운 `pnpm preview`의 node 프로세스가 남아 Playwright(`reuseExistingServer`)가 옛 빌드를 검사 → 프로세스 정리. `pnpm preview`를 끌 때 셸만 죽고 node가 남음
 11. **라벨 `building` 누락**: 구현 시작 때 Issue 라벨 변경을 빠뜨림
 12. **자동 커밋 메시지 형식**: Spec Kitty 자동 커밋(`Add plan for feature …` 등)은 Conventional Commits가 아님. `setup-plan`·`finalize-tasks`는 일부 파일만 커밋해 나머지를 따로 커밋해야 함
+
+### 결론과 후속 조치 (2026-10-25, 사람 승인)
+
+- 머지·배포 확인: PR #5 머지(`17e3465`) → main CI `check`·Cloudflare Pages 성공, Issue #3 `deployed`·닫힘, 배포 번들에 눈금 코드 포함
+- **브랜치 구조 (막힌 지점 5)**: Spec Kitty는 specify·plan·tasks·analyze·상태 표시까지만. 구현은 기능 브랜치에서 직접, `/spec-kitty.implement`·`spec-kitty merge` 미사용 → `docs/agents/main.md` 6절 개정
+- **WP 나누기 (막힌 지점 7)**: "계산 + 그 계산을 쓰는 화면"을 한 WP로 → main.md 5절
+- **라벨 `building` (막힌 지점 11)**: main.md 6절에 구현 시작 체크리스트
+- **main 보호 (막힌 지점 9)**: PR 필수, 필수 상태 체크 `check`, 승인 수 0, 관리자에게도 적용(`enforce_admins: true`)
+- **`python3 -c` (막힌 지점 4)**: 1차 스펙 검토(`spec-review`)에서 제거. 1차는 식·근사로 풀고 근사를 표시, 2차가 `python3 -c`로 정밀 대조 (`docs/agents/review-spec.md`). 대안으로 `bc -l`(파일 입출력 없음)을 검토했으나 미설치
+- 정리: worktree `-coord`·`-lane-a`, 브랜치 `kitty/mission-howitzer-angle-ticks-01M5Q3M8*`, `setup/monorepo`·`setup/workspace`·`mission/howitzer-angle-ticks`(로컬·원격) 삭제
+- 미해결: 검토 에이전트 멈춤 근본 원인 (막힌 지점 1)
