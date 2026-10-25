@@ -42,8 +42,7 @@
           "*": "deny",
           "ls": "allow",
           "ls *": "allow",
-          "date": "allow",
-          "python3 -c *": "allow"
+          "date": "allow"
         }
       }
     },
