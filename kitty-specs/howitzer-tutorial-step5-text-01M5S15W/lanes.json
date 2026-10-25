@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "mission_slug": "howitzer-tutorial-step5-text-01M5S15W",
+  "mission_id": "01M5S15WK623GB3HS32HBY3GV7",
+  "mission_branch": "kitty/mission-howitzer-tutorial-step5-text-01M5S15W",
+  "target_branch": "mission/howitzer-tutorial-step5-text",
+  "lanes": [
+    {
+      "lane_id": "lane-a",
+      "wp_ids": [
+        "WP01"
+      ],
+      "write_scope": [
+        "e2e/helpers.ts",
+        "e2e/parity.spec.ts",
+        "e2e/step5-text.spec.ts",
+        "episodes/01-calculus-howitzer/src/missions.ts",
+        "playwright.config.ts"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "legacy-cleanup"
+      ],
+      "depends_on_lanes": [],
+      "parallel_group": 0
+    }
+  ],
+  "computed_at": "2026-10-25T08:54:14.253444+00:00",
+  "computed_from": "dependency_graph+ownership",
+  "planning_artifact_wps": [],
+  "planning_commit_sha": "28fcc9085ea30bbf9ab2fb89b2a310f6da76f320"
+}
