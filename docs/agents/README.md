@@ -18,6 +18,8 @@ herdr 안의 아무 패널에서 `scripts/workspace.sh`를 실행하면 아래 �
 - 검토 에이전트 패널은 처음에 OpenCode 기본 agent(Build)로 열림. `/spec-review`, `/pr-check`, `/fact-check` 명령을 쓰거나 Tab으로 agent를 고름. 이 레포에서는 Build·Plan도 파일 수정이 막혀 있음(`opencode.json`)
 
 
+작업은 Issue마다 **정식 경로**(스펙 검토 → 계획 → 구현 → 크로스체크)나 **가벼운 경로**(라벨 `light`: 짧은 스펙 → 구현 → 크로스체크)로 진행합니다. 경로는 채택할 때 사람이 정합니다 ([main.md](main.md) "경로").
+
 각 세션이 프로젝트 폴더에서 자동으로 읽는 위치와, 역할별 지시문 파일입니다.
 `.claude/`, `.opencode/`는 Spec Kitty가 gitignore로 관리하므로 역할 지시문은 모두 이 폴더(커밋됨)에 둡니다.
 
@@ -43,6 +45,7 @@ claude -n research \
 scripts/review-agent.sh spec kitty-specs/<미션 폴더>   # 1차 독립 풀이 → 2차 정답 비교
 scripts/review-agent.sh pr-check <PR 번호>
 scripts/review-agent.sh fact-check <Issue 번호>
+scripts/review-status.sh [--watch]                     # 진행 상태: 단계·시간·도구 호출·멈춤 의심·결과물
 ```
 
 DeepSeek API 키는 OpenCode 인증 저장소에 있습니다 (`opencode auth login hive`로 등록, `opencode auth list`로 확인).
