@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "mission_slug": "howitzer-tutorial-act-buttons-01M5RVRJ",
+  "mission_id": "01M5RVRJZ4XVFXDM3ZTW0Y5J1W",
+  "mission_branch": "kitty/mission-howitzer-tutorial-act-buttons-01M5RVRJ",
+  "target_branch": "mission/howitzer-tutorial-act-buttons",
+  "lanes": [
+    {
+      "lane_id": "lane-a",
+      "wp_ids": [
+        "WP01"
+      ],
+      "write_scope": [
+        "e2e/helpers.ts",
+        "e2e/touch-targets.spec.ts",
+        "engine/src/tutorial/tutorial.css",
+        "engine/src/ui/components.css",
+        "playwright.config.ts"
+      ],
+      "predicted_surfaces": [
+        "api",
+        "tracker-integration"
+      ],
+      "depends_on_lanes": [],
+      "parallel_group": 0
+    }
+  ],
+  "computed_at": "2026-10-25T06:51:30.260298+00:00",
+  "computed_from": "dependency_graph+ownership",
+  "planning_artifact_wps": [],
+  "planning_commit_sha": "0a52d0351efc3d325e0f7b1a790cf161886c0cac"
+}
