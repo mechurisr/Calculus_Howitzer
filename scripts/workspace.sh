@@ -2,7 +2,9 @@
 # herdr 작업 공간 한 번에 띄우기 (herdr 안의 패널에서 실행)
 #
 #   ┌──────────────────────────┬──────────────────────────┐
-#   │ 메인 세션 (Claude Code)   │ 검토 에이전트 진행 로그    │
+#   │                          │ 검토 진행 상태 (막대)      │
+#   │ 메인 세션 (Claude Code)   ├──────────────────────────┤
+#   │                          │ 검토 에이전트 진행 로그    │
 #   ├──────────────────────────┼──────────────────────────┤
 #   │ 리서치 세션 (Claude Code) │ spec-kitty 대시보드       │
 #   └──────────────────────────┴──────────────────────────┘
@@ -41,13 +43,17 @@ fi
 
 ws=$(herdr workspace create --cwd "$ROOT" --label "$LABEL" --focus)
 main=$(jq -r '.result.root_pane.pane_id' <<<"$ws")
-split() { herdr pane split "$1" --direction "$2" --cwd "$ROOT" --no-focus | jq -r '.result.pane.pane_id'; }
-review=$(split "$main" right)
+# split <패널> <방향> [원래 패널이 차지할 비율]
+split() { herdr pane split "$1" --direction "$2" ${3:+--ratio "$3"} --cwd "$ROOT" --no-focus | jq -r '.result.pane.pane_id'; }
+status=$(split "$main" right)
 research=$(split "$main" down)
-dash=$(split "$review" down)
+dash=$(split "$status" down)
+# 검토 칸을 위(진행 막대, 약 1/3)·아래(로그)로 나눔
+review=$(split "$status" down 0.35)
 
 herdr pane rename "$main" "메인 세션" >/dev/null
 herdr pane rename "$research" "리서치 세션" >/dev/null
+herdr pane rename "$status" "검토 진행 상태" >/dev/null
 herdr pane rename "$review" "검토 에이전트 로그" >/dev/null
 herdr pane rename "$dash" "spec-kitty 대시보드" >/dev/null
 
@@ -67,10 +73,12 @@ start ms-research --kind claude --pane "$research" -- -n research \
 # 검토 에이전트는 scripts/review-agent.sh 가 --standalone 으로 실행해 OpenCode 화면에 안 보이므로, 이 패널은 진행 로그를 보여 줌.
 # OpenCode 를 직접 쓰려면 이 패널에서 Ctrl+C 후 opencode 실행
 herdr pane run "$review" "scripts/review-log.sh" >/dev/null
+# 진행 막대: 단계·경과/제한·도구 호출·멈춤 의심·결과물 (5초마다)
+herdr pane run "$status" "scripts/review-status.sh --watch" >/dev/null
 # 대시보드는 백그라운드 서버를 띄우고 주소를 출력한 뒤 셸로 돌아옴
 herdr pane run "$dash" "spec-kitty dashboard $OPEN" >/dev/null
 
 herdr agent focus ms-main >/dev/null
-echo "띄움: $(jq -r '.result.workspace.workspace_id' <<<"$ws") ($LABEL) — 메인 $main · 리서치 $research · 검토 $review · 대시보드 $dash"
+echo "띄움: $(jq -r '.result.workspace.workspace_id' <<<"$ws") ($LABEL) — 메인 $main · 리서치 $research · 검토 상태 $status · 검토 로그 $review · 대시보드 $dash"
 (( ${#blocked[@]} )) && echo "질문 화면에서 기다리는 에이전트: ${blocked[*]} — 해당 패널에서 답해 주세요 (처음 한 번은 Claude Code 폴더 신뢰 확인)"
 exit 0
