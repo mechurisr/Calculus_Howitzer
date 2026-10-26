@@ -75,20 +75,20 @@ test('tutorial walkthrough matches legacy', async ({ browser }) => {
   }
   // 정규식이 맞지 않아 아무것도 가리지 못한 채 비교하는 일을 막음 (양쪽 모두에서 가려져야 함)
   expect(masked).toBeGreaterThanOrEqual(2);
-  // 5단계(손으로 쌓아 보기)는 가리지 않고, 원본에 문장 치환·순서 재배치를 적용해 글자까지 비교
-  // (kitty-specs/howitzer-tutorial-step5-text-01M5S15W NFR-001). 라벨 끝이 정확히 "· 5 / 22" 인 것만 — "15 / 22" 와 섞이지 않게
-  let replaced = 0, reordered = 0;
+  // 5단계(손으로 쌓아 보기)는 가리지 않고, 원본에 문장 치환·누름별 설명 규칙을 적용해 글자까지 비교
+  // (kitty-specs/howitzer-tutorial-step5-text-01M5S15W NFR-001, howitzer-tutorial-step5-reveal-01M5VXMQ C-002). 라벨 끝이 정확히 "· 5 / 22" 인 것만 — "15 / 22" 와 섞이지 않게
+  let replaced = 0; const revealed = new Set<number>();
   for (const [label, snap] of legacy) {
     if (!/ · 5 \/ 22$/.test(label)) continue;
     for (const id of ['tutBody', 'tut'] as const) {
       const el = snap.els[id]; if (!el) continue;
       const r = legacyStep5(el[0] as string);
-      if (id === 'tutBody') { replaced += +r.replaced; reordered += +r.reordered; }
+      if (id === 'tutBody') { replaced += +r.replaced; if (r.revealed) revealed.add(r.revealed); }
       el[0] = r.html;
     }
   }
   expect(replaced, '5단계 발사 전 문장 치환이 적용됨').toBeGreaterThanOrEqual(1);
-  expect(reordered, '5단계 표 설명 재배치가 적용됨').toBeGreaterThanOrEqual(1);
+  expect([...revealed].sort(), '5단계 누름별 설명 규칙이 1~4번 누름에 모두 적용됨').toEqual([1, 2, 3, 4]);
   compare(legacy, current);
 });
 

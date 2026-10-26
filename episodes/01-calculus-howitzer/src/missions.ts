@@ -156,10 +156,8 @@ export const TUT: TutStep[] = [
       else{const x=r[r.length-1];h='<p>'+tr(`방금 0.5초 동안 높이 조각 <b>${sg(x.dy,1)} m</b>를 더해서, 지금까지 쌓인 높이는 <b>${sg(x.ytot,1)} m</b>예요.`,
         `In the last 0.5 s we added a height piece of <b>${sg(x.dy,1)} m</b>, so the stacked height is now <b>${sg(x.ytot,1)} m</b>.`)+'</p>';}
       h+=stepTable(s);
-      if(r.length){
-        // 표 → 표 설명 → 🤔 의문 → 이유 순서 (kitty-specs/howitzer-tutorial-step5-text-01M5S15W FR-001)
-        h+='<p class="small">'+tr('vy가 매번 약 <b>4.9씩</b> 줄어요 (중력 9.8 × 0.5초). 맨 오른쪽 칸은 조각들을 <b>전부 더한 값</b>이에요. 이게 적분이에요.',
-          'vy drops by about <b>4.9</b> each time (gravity 9.8 × 0.5 s). The right-most column is <b>all the pieces added up</b>. That’s an integral.')+'</p>';
+      // 누를 때마다 새 설명 하나만: 1번 🤔 의문 + 이유 → 2번 vy 감소 → 3번 적분 → 4번~ 더 눌러 보기 (kitty-specs/howitzer-tutorial-step5-reveal-01M5VXMQ FR-001)
+      if(r.length===1){
         const f0=r[0];
         h+='<p>'+tr(`🤔 그런데 첫 줄을 보세요. ${f0.vy0.toFixed(1)} × 0.5 = <b>${(f0.vy0*0.5).toFixed(1)}</b> 아닌가요? 표에는 <b>${f0.dy.toFixed(1)} m</b>예요. 아래에서 이유를 볼게요.`,
           `🤔 But look at the first row. Isn’t ${f0.vy0.toFixed(1)} × 0.5 = <b>${(f0.vy0*0.5).toFixed(1)}</b>? The table says <b>${f0.dy.toFixed(1)} m</b>. Here’s why.`)+'</p>';
@@ -167,6 +165,8 @@ export const TUT: TutStep[] = [
         const x=r[r.length-1],a=+x.vy0.toFixed(1),b=+x.vy1.toFixed(1),dt=x.t1-x.t0,dts=Math.abs(dt-0.5)<0.005?'0.5':dt.toFixed(2);
         h+=`<div class="ex">${tr('방금 조각','Last piece')}: (${a.toFixed(1)} + ${b.toFixed(1)}) ÷ 2 × ${dts} = <b>${sg((a+b)/2*dt,1)} m</b><br>`+
           '<span class="small">'+tr('0.5초 동안에도 vy가 계속 줄어서, 시작값 대신 시작과 끝의 <b>평균</b>을 써요.','vy keeps dropping during the 0.5 s, so we use the <b>average</b> of start and end instead of the start value.')+'</span></div>';}
+      if(r.length===2)h+='<p class="small">'+tr('vy가 매번 약 <b>4.9씩</b> 줄어요 (중력 9.8 × 0.5초).','vy drops by about <b>4.9</b> each time (gravity 9.8 × 0.5 s).')+'</p>';
+      if(r.length===3)h+='<p class="small">'+tr('맨 오른쪽 칸은 조각들을 <b>전부 더한 값</b>이에요. 이게 적분이에요.','The right-most column is <b>all the pieces added up</b>. That’s an integral.')+'</p>';
       if(r.some((x:StepRec)=>x.dy<0))h+='<p class="fb">'+tr('조각이 <b>음수</b>가 됐어요! vy가 0 아래로 내려가서, 이제는 <b>더할수록 높이가 줄어요</b>.','A piece went <b>negative</b>! vy dropped below 0, so now <b>adding makes the height go down</b>.')+'</p>';
       if(r.length>=4)h+='<p class="small">'+tr('더 눌러 봐도 되고, <b>계속 ▶</b>을 누르면 끝까지 날아가요.','Keep pressing if you like, or press <b>Resume ▶</b> to let it fly.')+'</p>';
       return h;}},
