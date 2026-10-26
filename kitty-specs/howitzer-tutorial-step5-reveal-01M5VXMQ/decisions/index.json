@@ -1,0 +1,77 @@
+{
+  "entries": [
+    {
+      "created_at": "2026-10-26T10:56:15.788267Z",
+      "decision_id": "01M5VXN4XCFDWDXWVQ9B74J7QB",
+      "final_answer": "\uc608 (\uc0ac\ub78c \uacb0\uc815 2026-10-26)",
+      "input_key": "reveal_order",
+      "mission_id": "01M5VXMQE92GA95CF9AQBCWCX8",
+      "mission_slug": "howitzer-tutorial-step5-reveal-01M5VXMQ",
+      "opened_by": "cli",
+      "options": [
+        "\uc608",
+        "\uc544\ub2c8\uc624",
+        "Other"
+      ],
+      "origin_flow": "specify",
+      "other_answer": false,
+      "question": "Issue #10 \uc21c\uc11c(\ud45c \uc124\uba85\u2192\ud83e\udd14 \uc758\ubb38)\uc640 \ubc18\ub300\ub85c 1\ubc88 \ub204\ub984\uc5d0 \uc758\ubb38+\uc774\uc720, 2\ubc88 4.9 \uac10\uc18c, 3\ubc88 \uc801\ubd84\uc73c\ub85c \ud574\ub3c4 \ub418\ub294\uac00?",
+      "rationale": null,
+      "resolved_at": "2026-10-26T10:56:18.622832Z",
+      "resolved_by": null,
+      "slot_key": "specify.flow.order",
+      "status": "resolved",
+      "step_id": null,
+      "summary_json": null
+    },
+    {
+      "created_at": "2026-10-26T10:56:21.437698Z",
+      "decision_id": "01M5VXNADX19C8ZNFNZ9EA6XFD",
+      "final_answer": "\ub0b4\ub9b0\ub2e4",
+      "input_key": "previous_text",
+      "mission_id": "01M5VXMQE92GA95CF9AQBCWCX8",
+      "mission_slug": "howitzer-tutorial-step5-reveal-01M5VXMQ",
+      "opened_by": "cli",
+      "options": [
+        "\ub0b4\ub9b0\ub2e4",
+        "\uc313\ub294\ub2e4",
+        "Other"
+      ],
+      "origin_flow": "specify",
+      "other_answer": false,
+      "question": "\uc55e \ub204\ub984\uc758 \uc124\uba85\uc744 \uacc4\uc18d \uc313\uc744\uc9c0, \ub0b4\ub9b4\uc9c0?",
+      "rationale": null,
+      "resolved_at": "2026-10-26T10:56:24.145784Z",
+      "resolved_by": null,
+      "slot_key": "specify.flow.previous",
+      "status": "resolved",
+      "step_id": null,
+      "summary_json": null
+    },
+    {
+      "created_at": "2026-10-26T10:56:26.880768Z",
+      "decision_id": "01M5VXNFR01GDKTN89R0KJR9H4",
+      "final_answer": "\uac00\ubcbc\uc6b4 \uacbd\ub85c",
+      "input_key": "route",
+      "mission_id": "01M5VXMQE92GA95CF9AQBCWCX8",
+      "mission_slug": "howitzer-tutorial-step5-reveal-01M5VXMQ",
+      "opened_by": "cli",
+      "options": [
+        "\uac00\ubcbc\uc6b4 \uacbd\ub85c",
+        "\uc815\uc2dd \uacbd\ub85c"
+      ],
+      "origin_flow": "specify",
+      "other_answer": false,
+      "question": "\uc815\uc2dd \uacbd\ub85c / \uac00\ubcbc\uc6b4 \uacbd\ub85c?",
+      "rationale": null,
+      "resolved_at": "2026-10-26T10:56:29.645204Z",
+      "resolved_by": null,
+      "slot_key": "specify.path.route",
+      "status": "resolved",
+      "step_id": null,
+      "summary_json": null
+    }
+  ],
+  "mission_id": "01M5VXMQE92GA95CF9AQBCWCX8",
+  "version": 1
+}

@@ -1,0 +1,16 @@
+{
+  "coordination_branch": "kitty/mission-howitzer-tutorial-step5-reveal-01M5VXMQ",
+  "created_at": "2026-10-26T10:56:02.018304+00:00",
+  "flattened": false,
+  "friendly_name": "튜토리얼 5단계 설명을 누를 때마다 하나씩",
+  "mission_id": "01M5VXMQE92GA95CF9AQBCWCX8",
+  "mission_number": null,
+  "mission_slug": "howitzer-tutorial-step5-reveal-01M5VXMQ",
+  "mission_type": "software-dev",
+  "pr_bound": true,
+  "purpose_context": "튜토리얼 5단계 '손으로 쌓아 보기'는 0.5초 진행을 처음 누르는 순간 설명 다섯 덩어리가 한꺼번에 나와 글이 많고, 표가 한 줄뿐이라 'vy가 매번 약 4.9씩 줄어요'도 확인할 수 없다. 누를 때마다 새 설명 하나만 보여 줘 표가 쌓이는 흐름을 따라 자연스럽게 이어지게 한다. 문구·계산·진행 조건은 그대로라 가벼운 경로(light, Issue #23).",
+  "purpose_tldr": "미적분 자주포 튜토리얼 5단계에서 0.5초 진행을 누를 때마다 설명을 하나씩 보여 준다 (가벼운 경로)",
+  "slug": "howitzer-tutorial-step5-reveal-01M5VXMQ",
+  "target_branch": "mission/howitzer-tutorial-step5-reveal",
+  "topology": "coord"
+}
