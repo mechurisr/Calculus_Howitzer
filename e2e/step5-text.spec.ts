@@ -28,6 +28,9 @@ const expected: Record<number, string[]> = {
   2: ['piece', 'table', 'drop'],
   3: ['piece', 'table', 'sum'],
   4: ['piece', 'table', 'more'],
+  // 4번 이후에도 설명은 하나만 (PR #27 크로스체크)
+  5: ['piece', 'table', 'more'],
+  10: ['piece', 'table', 'more'],
   11: ['piece', 'table', 'more'],
   12: ['piece', 'table', 'negative', 'more'],
 };
@@ -61,5 +64,5 @@ test('발사 전 안내 문구, 누를 때마다 설명 하나씩 (한/영) (FR-
     checked.push(n);
   }
   // 위 단언이 모든 횟수에서 실제로 돌았는지
-  expect(checked).toEqual([1, 2, 3, 4, 11, 12]);
+  expect(checked).toEqual([1, 2, 3, 4, 5, 10, 11, 12]);
 });

@@ -154,12 +154,13 @@ export function maskExperimentStep(html: string) {
 // ① 발사 전 안내 마지막 문장 치환 ② 원본의 "🤔 의문 + 이유 상자 + 표 설명" 묶음을 표 줄 수(= 누른 횟수)에 맞는 설명 하나로:
 //    1줄 의문 + 이유 상자, 2줄 표 설명 앞 문장(vy 4.9 감소), 3줄 뒤 문장(적분), 4줄 이상 없음
 // 문장 치환은 한국어만 (이전 비교 walkthrough 가 한국어로 돎). 영어로 비교하게 되면 영어 문장 치환을 더해야 함
-// replaced·revealed(적용된 줄 수, 안 맞으면 0)로 실제 적용 여부를 돌려줌 — 정규식이 안 맞아 조용히 비교가 통과·실패하지 않게 (스펙 검토 R1)
+// replaced·revealed(적용된 누름 1~4, 4는 4번 이상, 안 맞으면 0)로 실제 적용 여부를 돌려줌 — 정규식이 안 맞아 조용히 비교가 통과·실패하지 않게 (스펙 검토 R1)
 export function legacyStep5(html: string) {
   const a = html.replace('한 걸음씩 날려 보세요.', '포탄을 0.5초씩 앞으로 보내 보세요.');
   const rows = ((/<table class="steps">([\s\S]*?)<\/table>/.exec(a)?.[1] ?? '').match(/<tr>/g) ?? []).length - 1;
   const b = a.replace(/(<p>🤔 그런데[\s\S]*?<\/p><div class="ex">[\s\S]*?<\/div>)<p class="small">(vy가 매번 약[\s\S]*?\)\.) ([\s\S]*?)<\/p>/,
     (_m, reason: string, drop: string, sum: string) =>
       rows === 1 ? reason : rows === 2 ? `<p class="small">${drop}</p>` : rows === 3 ? `<p class="small">${sum}</p>` : '');
-  return { html: b, replaced: a !== html, revealed: b !== a ? rows : 0 };
+  // 표는 6줄을 넘으면 ⋮ 로 줄어 줄 수 ≠ 누른 횟수 → 4번 이상(설명 없음)은 4로 묶음 (PR #27 크로스체크)
+  return { html: b, replaced: a !== html, revealed: b !== a ? Math.min(rows, 4) : 0 };
 }
