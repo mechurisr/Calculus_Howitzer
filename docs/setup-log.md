@@ -144,7 +144,7 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 - Issue 폼 `.github/ISSUE_TEMPLATE/episode-idea.yml` (라벨 `idea` 자동). 항목은 리서치 세션 Issue 형식과 같음(역할 설정, 수학 개념, 학습 목표 3개 이내, 핵심 인터랙션, 실제 데이터·물리값 표, 참고 자료 필수, 기존 주제와의 차이, 난이도). `docs/agents/research.md`의 제목 수준을 폼 출력과 같은 `###`로 맞춤
 - PR 템플릿 `.github/pull_request_template.md`: 구현 요약, 수학 검증 결과(표), 스크린샷(데스크톱·360px), 리뷰 요청 사항 + 헌장 확인 목록
 - CI `.github/workflows/ci.yml`: PR·main push마다 `pnpm check` → Playwright 번들 Chromium으로 `pnpm test:e2e`(`PW_CHANNEL=""`), 실패 시 리포트 업로드. Action 버전은 최신 릴리스 조회로 결정: checkout@v7, setup-node@v7, pnpm/action-setup@v6(packageManager의 pnpm 12.14.0 사용), upload-artifact@v7
-- (2026-10-31 추가, 사람 결정) CI는 PR 다시 열기에는 돌지 않고, 문서·도구(`docs/`, `scripts/`, `kitty-specs/`, 루트 `*.md`)만 바꾼 PR은 브라우저 테스트를 건너뜀. main push는 항상 전체 실행. 필수 체크 `check`가 사라지지 않도록 단계 수준 조건으로 구현
+- (2026-10-31 추가, 사람 결정) CI는 PR 다시 열기에는 돌지 않고, 문서·도구(`docs/`, `scripts/`, `kitty-specs/`, 루트 `*.md`)만 바꾼 PR은 브라우저 테스트를 건너뜀. main push는 항상 전체 실행. 필수 체크 `check`가 사라지지 않도록 단계 수준 조건으로 구현. 헌장 PRJ-008 머지 조건에 같은 예외를 적음
 - `.github/workflows/label-deployed.yml`: PR이 main에 머지되면 그 PR이 닫는 Issue에 `deployed`, 진행 라벨 제거 (배포 성공 여부는 보지 않음)
 - Cloudflare Pages: `wrangler.toml`(name `math-role-sims`, `pages_build_output_dir = "./dist"`), `.node-version`(26). pnpm 버전은 파일로 지정할 수 없어 대시보드 환경 변수 `PNPM_VERSION=12.14.0` 필요(기본 10.11.1). 연결 절차: `docs/deploy.md`
 - `404.html` 추가: Cloudflare Pages는 404.html이 없으면 없는 주소마다 루트(랜딩)를 보여 줌(SPA 가정)

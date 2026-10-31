@@ -20,7 +20,7 @@ governance:
     rules:
     - All work lands on main through a pull request from a feature branch; no direct pushes to main.
     - Merging to main auto-deploys to Cloudflare Pages.
-    - The human merges only when CI (pnpm check, pnpm test:e2e) passes and the review agent cross-check has no unresolved [critical] finding.
+    - The human merges only when CI (pnpm check, pnpm test:e2e) passes and the review agent cross-check has no unresolved [critical] finding. PRs that only change docs/, scripts/, kitty-specs/ or root *.md skip pnpm test:e2e in PR CI; it runs on main after merge.
   charter:
     selected_paradigms:
     - specification-by-example
