@@ -34,7 +34,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           if files=$(git diff --name-only HEAD^1 HEAD) && [ -n "$files" ] \
-            && ! grep -qvE '^(docs/|scripts/|kitty-specs/|[^/]+\.md$)' <<<"$files"; then
+            && [ -z "$(grep -vE '^(docs/|scripts/|kitty-specs/|[^/]+\.md$)' <<<"$files")" ]; then
             echo "e2e=skip" >> "$GITHUB_OUTPUT"
             echo "문서·도구만 변경: 브라우저 테스트 건너뜀" >> "$GITHUB_STEP_SUMMARY"
           fi
