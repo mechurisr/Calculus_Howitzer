@@ -290,3 +290,10 @@ spec-kitty 3.2.7은 **어떤 명령이든 실행할 때마다** (`--version` 포
 
 #10(문장 하나 + 문단 이동)이 스펙 검토 약 40분, 계획 3단계, 크로스체크 약 30분을 거쳐 절차가 변경보다 훨씬 무거웠음. 검토가 잡은 것은 대부분 테스트·화면 세부였고 수학 오류는 #4·#9·#10 모두 0건.
 → `docs/agents/main.md`에 **가벼운 경로**(라벨 `light`): 난이도 1·계산/물리값/학습 흐름 불변이면 `answers.md`·스펙 검토·plan/tasks/analyze 생략, 로컬은 바뀐 테스트만, 크로스체크는 유지. 경로는 채택 때 사람이 정함. 헌장(PRJ-001~010)은 변경 없음 — 흐름 규칙은 main.md에 있고, PRJ-006은 새 에피소드 대상, PRJ-008 머지 조건은 두 경로 모두 그대로
+
+## TUI 진행 대시보드 (2026-10-31, 브랜치 `chore/workspace-kitty-tui`)
+
+- `scripts/kitty-dashboard.mjs`: herdr 오른쪽 아래 패널의 TUI. 웹 대시보드(`spec-kitty dashboard`)는 주소만 출력하고 셸로 돌아와 패널이 비어 있었음 → 서버는 그대로 띄우고 패널에 TUI를 표시 (주소는 아래쪽 줄, 지원하는 터미널에서는 클릭 가능)
+- 단계는 Spec Kitty 상태에서 읽지 않음: 기능 브랜치 구현이라 `status.json`이 비어 전부 0으로 나옴 (7단계 막힌 지점 5). 산출물 파일(작업 폴더 + `mission/*` 브랜치)·`feat(WPnn)` 커밋·PR·Issue 라벨·`logs/*.meta`에서 계산
+- 미션 ↔ Issue: PR이 닫는 Issue가 기준. `purpose_context`에는 지나간 Issue도 언급되므로(`#4 #9`), PR 전에는 열린 Issue만 연결. 가벼운 경로 판정(`light`)이 여기에 달려 있음
+- 의존성 없는 Node 스크립트. `--once`로 한 번 출력
