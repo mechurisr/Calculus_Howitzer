@@ -1,8 +1,11 @@
 # PR과 main push마다: 타입 검사·의존 규칙·단위 테스트(pnpm check) → 빌드 → 브라우저 테스트(pnpm test:e2e)
 # 헌장 머지 조건: 이 워크플로 통과 + 검토 에이전트 크로스체크에 미해결 [치명적] 없음
+# PR이 문서·도구(docs/, scripts/, kitty-specs/, 루트 *.md)만 바꾸면 브라우저 테스트만 건너뜀. main push에서는 항상 실행
+# 워크플로 전체를 경로로 제외하면 필수 체크 check가 생기지 않아 머지가 막히므로, 단계에서 조건을 건다
 name: CI
 on:
   pull_request:
+    types: [opened, synchronize]   # 다시 열기는 제외: 같은 커밋의 통과 기록이 남아 있음
   push:
     branches: [main]
 permissions:
@@ -16,6 +19,8 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2   # PR 병합 커밋과 그 부모를 비교
       - uses: pnpm/action-setup@v6   # 버전은 package.json packageManager
       - uses: actions/setup-node@v7
         with:
@@ -23,10 +28,22 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+      # 허용 목록 밖의 파일이 하나라도 있거나 비교에 실패하면 브라우저 테스트를 돌림
+      - name: Check whether browser tests are needed
+        id: scope
+        if: github.event_name == 'pull_request'
+        run: |
+          if files=$(git diff --name-only HEAD^1 HEAD) && [ -n "$files" ] \
+            && [ -z "$(grep -vE '^(docs/|scripts/|kitty-specs/|[^/]+\.md$)' <<<"$files")" ]; then
+            echo "e2e=skip" >> "$GITHUB_OUTPUT"
+            echo "문서·도구만 변경: 브라우저 테스트 건너뜀" >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Install Playwright browsers
+        if: steps.scope.outputs.e2e != 'skip'
         run: pnpm exec playwright install --with-deps chromium firefox webkit
       # PW_CHANNEL 을 비우면 시스템 Chrome 대신 Playwright 번들 Chromium 사용 (playwright.config.ts)
       - run: pnpm test:e2e
+        if: steps.scope.outputs.e2e != 'skip'
         env:
           CI: "true"
           PW_CHANNEL: ""
