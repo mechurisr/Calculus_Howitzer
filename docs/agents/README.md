@@ -10,14 +10,15 @@ herdr 안의 아무 패널에서 `scripts/workspace.sh`를 실행하면 아래 �
 │ 메인 세션 (ms-main)       ├──────────────────────────┤
 │                          │ 검토 에이전트 진행 로그    │
 ├──────────────────────────┼──────────────────────────┤
-│ 리서치 세션 (ms-research) │ spec-kitty 대시보드       │
+│ 리서치 세션 (ms-research) │ spec-kitty 진행 대시보드  │
 └──────────────────────────┴──────────────────────────┘
 ```
 
-- `scripts/workspace.sh --open`: 대시보드를 브라우저로도 열기 · `--close`: 작업 공간 닫기(에이전트 종료)
+- `scripts/workspace.sh --open`: 웹 대시보드를 브라우저로도 열기 · `--close`: 작업 공간 닫기(에이전트 종료)
 - 이미 떠 있으면 새로 만들지 않고 그 작업 공간으로 이동
 - 다른 패널에서 에이전트에게 일을 시킬 때: `herdr agent prompt ms-main "..." --wait`
 - 검토 칸 위쪽은 진행 막대(`scripts/review-status.sh --watch`: 단계·경과/제한·도구 호출·멈춤 의심·결과물), 아래쪽은 진행 로그(`scripts/review-log.sh`). 검토는 `scripts/review-agent.sh`가 `--standalone`으로 돌려 OpenCode 화면에는 안 보임
+- 오른쪽 아래는 TUI 진행 대시보드(`scripts/kitty-dashboard.mjs`): 미션별 단계(스펙 → 검토 → 계획 → 작업 → 구현 → PR → 크로스체크 → 머지)·WP·CI, Issue 라벨별 현황, 완료 미션. ↑↓ 스크롤, `r` 새로 고침, `q` 종료. 단계는 Spec Kitty 상태가 아니라 산출물 파일·브랜치 커밋·PR·Issue·검토 기록에서 계산함(기능 브랜치 구현이라 `status.json`이 비어 있음). 파일·git은 3초, GitHub는 60초마다 갱신
 - OpenCode를 직접 쓰려면 로그 패널에서 Ctrl+C 후 `opencode` 실행. 기본 agent(Build)로 열리고 `/spec-review`, `/pr-check`, `/fact-check` 명령이나 Tab으로 agent를 고름. 이 레포에서는 Build·Plan도 파일 수정이 막혀 있음(`opencode.json`)
 
 

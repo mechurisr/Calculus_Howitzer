@@ -6,11 +6,11 @@
 #   │ 메인 세션 (Claude Code)   ├──────────────────────────┤
 #   │                          │ 검토 에이전트 진행 로그    │
 #   ├──────────────────────────┼──────────────────────────┤
-#   │ 리서치 세션 (Claude Code) │ spec-kitty 대시보드       │
+#   │ 리서치 세션 (Claude Code) │ spec-kitty 진행 대시보드  │
 #   └──────────────────────────┴──────────────────────────┘
 #
 #   scripts/workspace.sh            띄우기 (이미 떠 있으면 그 작업 공간으로 이동)
-#   scripts/workspace.sh --open     대시보드를 브라우저로도 열기
+#   scripts/workspace.sh --open     웹 대시보드를 브라우저로도 열기
 #   scripts/workspace.sh --close    작업 공간 닫기 (에이전트도 종료)
 set -euo pipefail
 
@@ -75,8 +75,8 @@ start ms-research --kind claude --pane "$research" -- -n research \
 herdr pane run "$review" "scripts/review-log.sh" >/dev/null
 # 진행 막대: 단계·경과/제한·도구 호출·멈춤 의심·결과물 (5초마다)
 herdr pane run "$status" "scripts/review-status.sh --watch" >/dev/null
-# 대시보드는 백그라운드 서버를 띄우고 주소를 출력한 뒤 셸로 돌아옴
-herdr pane run "$dash" "spec-kitty dashboard $OPEN" >/dev/null
+# 웹 대시보드는 백그라운드 서버를 띄우고 셸로 돌아옴 (주소는 TUI 아래쪽 줄). 패널에는 TUI 진행 대시보드를 띄움
+herdr pane run "$dash" "spec-kitty dashboard $OPEN >/dev/null; scripts/kitty-dashboard.mjs" >/dev/null
 
 herdr agent focus ms-main >/dev/null
 echo "띄움: $(jq -r '.result.workspace.workspace_id' <<<"$ws") ($LABEL) — 메인 $main · 리서치 $research · 검토 상태 $status · 검토 로그 $review · 대시보드 $dash"
